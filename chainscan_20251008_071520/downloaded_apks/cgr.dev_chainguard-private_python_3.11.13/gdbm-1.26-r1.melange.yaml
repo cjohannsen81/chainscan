@@ -1,0 +1,469 @@
+package:
+  name: gdbm
+  version: "1.26"
+  epoch: 1
+  description: GNU dbm is a set of database routines which use extensible hashing
+  commit: 834490e333bbfebd997c42d713e1f728eab3958f
+  copyright:
+    - license: GPL-3.0-or-later
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.45-r0
+      - build-base=1-r8
+      - busybox=1.37.0-r47
+      - ca-certificates-bundle=20250619-r5
+      - gcc=15.1.0-r4
+      - glibc-dev=2.41-r56
+      - glibc-locale-posix=2.41-r56
+      - glibc=2.41-r56
+      - gmp=6.3.0-r8
+      - isl=0.27-r4
+      - ld-linux=2.41-r56
+      - libatomic=15.1.0-r4
+      - libcrypt1=2.41-r56
+      - libcrypto3=3.5.1-r1
+      - libgcc=15.1.0-r4
+      - libgo=15.1.0-r4
+      - libgomp=15.1.0-r4
+      - libquadmath=15.1.0-r4
+      - libssl3=3.5.1-r1
+      - libstdc++-dev=15.1.0-r4
+      - libstdc++=15.1.0-r4
+      - libxcrypt-dev=4.4.38-r3
+      - libxcrypt=4.4.38-r3
+      - libzstd1=1.5.7-r3
+      - linux-headers=6.16-r0
+      - make=4.4.1-r8
+      - mpc=1.3.1-r7
+      - mpfr=4.2.2-r2
+      - nss-db=2.41-r56
+      - nss-hesiod=2.41-r56
+      - openssf-compiler-options=20240627-r26
+      - pkgconf=2.5.1-r1
+      - posix-cc-wrappers=1-r7
+      - scanelf=1.3.8-r5
+      - wget=1.25.0-r3
+      - wolfi-baselayout=20230201-r23
+      - zlib=1.3.1-r51
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e
+      purl-name: gdbm
+      purl-version: "1.26"
+      uri: https://ftpmirror.gnu.org/gnu/gdbm/gdbm-1.26.tar.gz
+    pipeline:
+      - runs: |
+          if [ "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e" == "" ] && [ "" == "" ]; then
+          	printf "One of expected-sha256 or expected-sha512 is required"
+          	exit 1
+          fi
+          bn=$(basename https://ftpmirror.gnu.org/gnu/gdbm/gdbm-1.26.tar.gz)
+          if [ ! "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e" == "" ]; then
+          	fn="/var/cache/melange/sha256:6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          else
+          	fn="/var/cache/melange/sha512:"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          fi
+          if [ ! -f $bn ]; then
+          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://ftpmirror.gnu.org/gnu/gdbm/gdbm-1.26.tar.gz'
+          fi
+          if [ "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e" != "" ]; then
+          	printf "fetch: Expected sha256: 6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e\n"
+          	sum=$(sha256sum $bn | awk '{print $1}')
+          	if [ "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e" != "$sum" ]; then
+          		printf "fetch: Expected sha256 does not match found: $sum\n"
+          		exit 1
+          	fi
+          else
+          	printf "fetch: Expected sha512: \n"
+          	sum=$(sha512sum $bn | awk '{print $1}')
+          	if [ "" != "$sum" ]; then
+          		printf "fetch: Expected sha512 does not match found: $sum\n"
+          		exit 1
+          	fi
+          fi
+          if [ "true" = "true" ]; then
+          	tar -x '--strip-components=1' -C '.' -f $bn
+          fi
+          if [ "false" = "true" ]; then
+          	rm $bn
+          fi
+  - name: Configure
+    runs: |
+      ./configure \
+      	--host=x86_64-pc-linux-gnu \
+      	--target=x86_64-pc-linux-gnu \
+      	--prefix=/usr \
+      	--datadir=/usr/share
+  - uses: autoconf/make
+    pipeline:
+      - runs: |
+          make -C "." -j$(nproc) V=1
+  - uses: autoconf/make-install
+    pipeline:
+      - runs: |
+          make -C "." install DESTDIR="/home/build/melange-out/gdbm" V=1
+      - runs: |
+          find /home/build/melange-out/gdbm -name '*.la' -print -exec rm \{} \;
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/gdbm
+subpackages:
+  - name: gdbm-dev
+    pipeline:
+      - uses: split/dev
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/gdbm"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/gdbm-dev" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in usr/include usr/lib/pkgconfig usr/share/pkgconfig \
+              	usr/share/aclocal usr/share/gettext \
+              	usr/bin/*-config usr/bin/*_config usr/share/vala/vapi \
+              	usr/share/gir-[0-9]* usr/share/qt*/mkspecs \
+              	usr/lib/qt*/mkspecs \
+              	usr/lib/cmake usr/share/cmake \
+              	usr/lib/glade/modules usr/share/glade/catalogs \
+              	$(find . -name include -type d) \
+              	$(find $libdirs -name '*.a' 2>/dev/null) \
+              	$(find $libdirs -name '*.[cho]' \
+              		-o -name '*.prl' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/gdbm-dev/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+              for i in lib/*.so usr/lib/*.so; do
+              	if [ -L "$i" ]; then
+              		mkdir -p "/home/build/melange-out/gdbm-dev"/"${i%/*}"
+              		mv "$i" "/home/build/melange-out/gdbm-dev/$i" || return 1
+              	fi
+              done
+    dependencies:
+      runtime:
+        - gdbm
+    description: gdbm headers
+    commit: 834490e333bbfebd997c42d713e1f728eab3958f
+    test:
+      environment:
+        contents:
+          packages:
+            - gdbm-dev
+            - ldd-check
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--exclude-files="" \
+                	--packages="gdbm-dev" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: gdbm-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/gdbm"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" = "/home/build/melange-out/gdbm-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              for mandir in \
+              	"$PACKAGE_DIR/usr/share/man" \
+              	"$PACKAGE_DIR/usr/local/share/man" \
+              	"$PACKAGE_DIR/usr/man"; do
+
+              	if [ -d "$mandir" ]; then
+              		mkdir -p "/home/build/melange-out/gdbm-doc/usr/share/man"
+              		mv "$mandir"/* "/home/build/melange-out/gdbm-doc/usr/share/man/"
+              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
+              	fi
+              done
+      - uses: split/infodir
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/gdbm"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/gdbm-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              if [ -d "$PACKAGE_DIR/usr/share/info" ]; then
+              	rm -f "$PACKAGE_DIR"/usr/share/info/dir
+
+              	mkdir -p "/home/build/melange-out/gdbm-doc/usr/share"
+              	mv "$PACKAGE_DIR"/usr/share/info "/home/build/melange-out/gdbm-doc/usr/share"
+              fi
+    description: gdbm docs
+    commit: 834490e333bbfebd997c42d713e1f728eab3958f
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - gdbm-doc
+            - grep
+            - man-db
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/gdbm-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 882
+test:
+  environment:
+    contents:
+      packages:
+        - apk-tools
+        - gdbm
+        - ldd-check
+        - man-db
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - runs: |
+        gdbm_dump --version
+        gdbm_load --version
+        gdbmtool --version
+        gdbm_dump --help
+        gdbm_load --help
+        gdbmtool --help
+    - uses: test/tw/ldd-check
+      pipeline:
+        - name: check for missing library dependencies using ldd
+          runs: |
+            ldd-check \
+            	--files="" \
+            	--exclude-files="" \
+            	--packages="gdbm" \
+            	--extra-library-paths="" \
+            	--verbose="false"
+    - uses: test/no-docs
+      pipeline:
+        - name: primary package docs check
+          runs: |
+            primary_pkg=$(basename /home/build/melange-out/gdbm)
+            case "$primary_pkg" in
+            *-doc)
+            	echo "Skipping documentation package [$primary_pkg]"
+            	echo "Remove the \"test/no-docs\" pipeline from documentation packages"
+            	exit 0
+            	;;
+            esac
+            cd /
+            doc_violations=false
+            violation_count=0
+            has_manpages=false
+            has_infodir=false
+            default_paths="usr/share/man usr/local/share/man usr/man"
+            all_paths="$default_paths"
+            if command -v man >/dev/null 2>&1; then
+            	for path in $(man --path 2>/dev/null | tr ':' ' '); do
+            		clean_path=$(echo "$path" | sed 's|^/||')
+            		if [ -n "$clean_path" ]; then
+
+            			path_exists=false
+            			for existing_path in $all_paths; do
+            				if [ "$clean_path" = "$existing_path" ]; then
+            					path_exists=true
+            					break
+            				fi
+            			done
+
+            			if [ "$path_exists" = "false" ]; then
+            				all_paths="$all_paths $clean_path"
+            			fi
+            		fi
+            	done
+            fi
+            man_paths=""
+            for path in $all_paths; do
+            	if [ -z "$man_paths" ]; then
+            		man_paths="^$path/"
+            	else
+            		man_paths="$man_paths|^$path/"
+            	fi
+            done
+            for doc_file in $(apk info -qL "$primary_pkg" | grep -E "$man_paths"); do
+            	if [ -f "/$doc_file" ]; then
+            		if [ "$doc_violations" = "false" ]; then
+            			echo "Primary package [$primary_pkg] contains documentation files:"
+            			doc_violations=true
+            		fi
+            		has_manpages=true
+            		violation_count=$((violation_count + 1))
+            		echo "  /$doc_file (manual page)"
+            	fi
+            done
+            for doc_file in $(apk info -qL "$primary_pkg" | grep -E "^usr/share/info/|usr/local/share/info/"); do
+            	if [ -f "/$doc_file" ] && [ "$(basename "$doc_file")" != "dir" ]; then
+            		if [ "$doc_violations" = "false" ]; then
+            			echo "Primary package [$primary_pkg] contains documentation files:"
+            			doc_violations=true
+            		fi
+            		has_infodir=true
+            		violation_count=$((violation_count + 1))
+            		echo "  /$doc_file (info page)"
+            	fi
+            done
+            if [ "$doc_violations" = "true" ]; then
+            	echo ""
+            	echo "These files should be moved to a -doc subpackage."
+            	echo "Please add the following split pipeline(s):"
+            	if [ "$has_manpages" = "true" ]; then
+            		echo "  - split/manpages (for manual pages)"
+            	fi
+            	if [ "$has_infodir" = "true" ]; then
+            		echo "  - split/infodir (for GNU info pages)"
+            	fi
+            	echo ""
+            	echo "Total documentation files found: $violation_count"
+            	exit 1
+            fi
+            echo "Primary package [$primary_pkg] does not contain documentation files"

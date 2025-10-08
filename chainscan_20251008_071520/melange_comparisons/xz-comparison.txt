@@ -1,0 +1,245 @@
+======================================
+Package: xz
+Version 1: 5.8.1-r1 (python:3.11.12)
+Version 2: 5.8.1-r3 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/xz-5.8.1-r1.melange.yaml	2025-05-28 06:35:48
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/xz-5.8.1-r3.melange.yaml	2025-09-18 13:08:46
+@@ -1,9 +1,9 @@
+ package:
+   name: xz
+   version: 5.8.1
+-  epoch: 1
++  epoch: 3
+   description: Library and CLI tools for XZ and LZMA compressed files
+-  commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++  commit: aab4d43bfe60faf9735dc83a66dfc1200a80d597
+   copyright:
+     - license: GPL-3.0-or-later
+   resources: {}
+@@ -15,43 +15,43 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - binutils=2.44-r2
+-      - build-base=1-r8
+-      - busybox=1.37.0-r40
+-      - ca-certificates-bundle=20241121-r42
+-      - gcc=14.2.0-r12
+-      - glibc-dev=2.41-r4
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - gmp=6.3.0-r4
+-      - isl=0.27-r0
+-      - ld-linux=2.41-r4
+-      - libatomic=14.2.0-r12
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r2
+-      - libgcc=14.2.0-r12
+-      - libgo=14.2.0-r12
+-      - libgomp=14.2.0-r12
+-      - libquadmath=14.2.0-r12
+-      - libssl3=3.5.0-r2
+-      - libstdc++-dev=14.2.0-r12
+-      - libstdc++=14.2.0-r12
+-      - libxcrypt-dev=4.4.38-r1
+-      - libxcrypt=4.4.38-r1
+-      - libzstd1=1.5.7-r2
+-      - linux-headers=6.15-r0
+-      - make=4.4.1-r5
+-      - mpc=1.3.1-r5
+-      - mpfr=4.2.2-r0
+-      - nss-db=2.41-r4
+-      - nss-hesiod=2.41-r4
+-      - openssf-compiler-options=20240627-r20
+-      - pkgconf=2.4.3-r1
+-      - posix-cc-wrappers=1-r6
+-      - scanelf=1.3.8-r4
+-      - wget=1.25.0-r1
+-      - wolfi-baselayout=20230201-r20
+-      - zlib=1.3.1-r7
++      - binutils=2.45-r2
++      - build-base=1-r9
++      - busybox=1.37.0-r50
++      - ca-certificates-bundle=20250619-r6
++      - gcc=15.2.0-r2
++      - glibc-dev=2.42-r0
++      - glibc-locale-posix=2.42-r0
++      - glibc=2.42-r0
++      - gmp=6.3.0-r8
++      - isl=0.27-r4
++      - ld-linux=2.42-r0
++      - libatomic=15.2.0-r2
++      - libcrypt1=2.42-r0
++      - libcrypto3=3.5.2-r1
++      - libgcc=15.2.0-r2
++      - libgo=15.2.0-r2
++      - libgomp=15.2.0-r2
++      - libquadmath=15.2.0-r2
++      - libssl3=3.5.2-r1
++      - libstdc++-dev=15.2.0-r2
++      - libstdc++=15.2.0-r2
++      - libxcrypt-dev=4.4.38-r4
++      - libxcrypt=4.4.38-r4
++      - libzstd1=1.5.7-r3
++      - linux-headers=6.16.7-r0
++      - make=4.4.1-r8
++      - mpc=1.3.1-r7
++      - mpfr=4.2.2-r2
++      - nss-db=2.42-r0
++      - nss-hesiod=2.42-r0
++      - openssf-compiler-options=20240627-r27
++      - pkgconf=2.5.1-r1
++      - posix-cc-wrappers=1-r7
++      - scanelf=1.3.8-r5
++      - wget=1.25.0-r6
++      - wolfi-baselayout=20230201-r24
++      - zlib=1.3.1-r51
+   accounts:
+     run-as: ""
+     users:
+@@ -198,7 +198,7 @@
+       runtime:
+         - xz
+     description: xz headers
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: aab4d43bfe60faf9735dc83a66dfc1200a80d597
+     test:
+       environment:
+         contents:
+@@ -259,6 +259,7 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="xz-dev" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+@@ -271,18 +272,25 @@
+               if [ -n "" ]; then
+               	PACKAGE_DIR="/home/build/melange-out/"
+               fi
+-              if [ "$PACKAGE_DIR" == "/home/build/melange-out/xz-doc" ]; then
++              if [ "$PACKAGE_DIR" = "/home/build/melange-out/xz-doc" ]; then
+               	echo "ERROR: Package can not split files from itself!" && exit 1
+               fi
+-              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+-              	mkdir -p "/home/build/melange-out/xz-doc/usr/share"
+-              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/xz-doc/usr/share"
+-              fi
++              for mandir in \
++              	"$PACKAGE_DIR/usr/share/man" \
++              	"$PACKAGE_DIR/usr/local/share/man" \
++              	"$PACKAGE_DIR/usr/man"; do
++
++              	if [ -d "$mandir" ]; then
++              		mkdir -p "/home/build/melange-out/xz-doc/usr/share/man"
++              		mv "$mandir"/* "/home/build/melange-out/xz-doc/usr/share/man/"
++              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
++              	fi
++              done
+       - runs: |
+           mkdir -p /home/build/melange-out/xz-doc/usr/share/doc
+           mv /home/build/melange-out/xz/usr/share/doc/xz /home/build/melange-out/xz-doc/usr/share/doc/xz
+     description: xz documentation
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: aab4d43bfe60faf9735dc83a66dfc1200a80d597
+     test:
+       environment:
+         contents:
+@@ -323,7 +331,7 @@
+                 fi
+                 cd /
+                 doc_files=false
+-                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
++                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                 	if [ -f /"$doc_file" ]; then
+ 
+                 		man -l /"$doc_file" >/dev/null
+@@ -364,6 +372,7 @@
+     contents:
+       packages:
+         - ldd-check
++        - ver-check
+         - xz
+     accounts:
+       run-as: ""
+@@ -379,53 +388,46 @@
+           members:
+             - build
+   pipeline:
++    - uses: test/tw/ver-check
++      with:
++        bins: lzma lzfgrep xzcat lzmore lzmadec lzgrep xzless xzgrep xzegrep unlzma lzdiff xzcmp lzless xzfgrep lzcat xzmore lzcmp unxz xzdec xzdiff lzmainfo lzegrep
++        version: 5.8.1
++      pipeline:
++        - name: check version information for binaries
++          runs: |
++            ver-check \
++            	--bins="lzma lzfgrep xzcat lzmore lzmadec lzgrep xzless xzgrep xzegrep unlzma lzdiff xzcmp lzless xzfgrep lzcat xzmore lzcmp unxz xzdec xzdiff lzmainfo lzegrep" \
++            	--version="5.8.1" \
++            	--version-flag="auto" \
++            	--match-type="contains" \
++            	--verbose="false"
+     - name: Verify xz installation
+       runs: |
+         xz --version || exit 1
+-        lzcat --version
++    - name: Test help commands
++      runs: |
+         lzcat --help
+-        lzcmp --version
+         lzcmp --help
+-        lzdiff --version
+         lzdiff --help
+-        lzegrep --version
+         lzegrep --help
+-        lzfgrep --version
+         lzfgrep --help
+-        lzgrep --version
+         lzgrep --help
+-        lzless --version
+         lzless --help
+-        lzma --version
+         lzma --help
+-        lzmadec --version
+         lzmadec --help
+-        lzmainfo --version
+         lzmainfo --help
+-        lzmore --version
+         lzmore --help
+-        unlzma --version
+         unlzma --help
+-        unxz --version
+         unxz --help
+         xz --help
+-        xzcat --version
+         xzcat --help
+-        xzcmp --version
+         xzcmp --help
+-        xzdec --version
+         xzdec --help
+-        xzdiff --version
+         xzdiff --help
+-        xzegrep --version
+         xzegrep --help
+-        xzfgrep --version
+         xzfgrep --help
+-        xzgrep --version
+         xzgrep --help
+-        xzless --version
+         xzless --help
+-        xzmore --version
+         xzmore --help
+     - name: Basic xz compression and decompression test
+       runs: |
+@@ -441,6 +443,7 @@
+           runs: |
+             ldd-check \
+             	--files="" \
++            	--exclude-files="" \
+             	--packages="xz" \
+             	--extra-library-paths="" \
+             	--verbose="false"

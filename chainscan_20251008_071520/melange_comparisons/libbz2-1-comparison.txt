@@ -1,0 +1,316 @@
+======================================
+Package: libbz2-1
+Version 1: 1.0.8-r12 (python:3.11.12)
+Version 2: 1.0.8-r21 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/libbz2-1-1.0.8-r12.melange.yaml	2025-05-28 06:35:48
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/libbz2-1-1.0.8-r21.melange.yaml	2025-08-01 16:05:56
+@@ -1,9 +1,9 @@
+ package:
+   name: bzip2
+   version: 1.0.8
+-  epoch: 12
++  epoch: 21
+   description: a library implementing the bzip2 compression algorithms
+-  commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++  commit: 2619f318eef93ed7f288a87b446626ed9eff6488
+   copyright:
+     - license: MPL-2.0 AND MIT
+   resources: {}
+@@ -15,66 +15,66 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - binutils=2.44-r2
++      - binutils=2.45-r0
+       - build-base=1-r8
+-      - busybox=1.37.0-r41
+-      - ca-certificates-bundle=20241121-r42
+-      - cyrus-sasl=2.1.28-r40
+-      - gcc=14.2.0-r12
+-      - gdbm=1.25-r0
+-      - git=2.49.0-r1
+-      - glibc-dev=2.41-r4
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - gmp=6.3.0-r4
+-      - heimdal-libs=7.8.0-r40
+-      - isl=0.27-r0
+-      - keyutils-libs=1.6.3-r31
+-      - krb5-conf=1.0-r6
+-      - krb5-libs=1.21.3-r40
+-      - ld-linux=2.41-r4
+-      - libatomic=14.2.0-r12
+-      - libbrotlicommon1=1.1.0-r5
+-      - libbrotlidec1=1.1.0-r5
+-      - libcom_err=1.47.2-r21
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r2
+-      - libcurl-openssl4=8.14.0-r0
+-      - libexpat1=2.7.1-r0
+-      - libgcc=14.2.0-r12
+-      - libgo=14.2.0-r12
+-      - libgomp=14.2.0-r12
+-      - libidn2=2.3.8-r0
+-      - libldap=2.6.10-r0
+-      - libnghttp2-14=1.65.0-r0
+-      - libpcre2-8-0=10.45-r1
+-      - libpsl=0.21.5-r4
+-      - libquadmath=14.2.0-r12
+-      - libssl3=3.5.0-r2
+-      - libstdc++-dev=14.2.0-r12
+-      - libstdc++=14.2.0-r12
+-      - libunistring=1.3-r1
+-      - libverto=0.3.2-r4
+-      - libxcrypt-dev=4.4.38-r1
+-      - libxcrypt=4.4.38-r1
+-      - libzstd1=1.5.7-r2
+-      - linux-headers=6.15-r1
+-      - make=4.4.1-r5
+-      - mpc=1.3.1-r5
+-      - mpfr=4.2.2-r0
+-      - ncurses-terminfo-base=6.5_p20241228-r1
+-      - ncurses=6.5_p20241228-r1
+-      - nss-db=2.41-r4
+-      - nss-hesiod=2.41-r4
+-      - openssf-compiler-options=20240627-r20
+-      - patch=2.8-r0
+-      - pkgconf=2.4.3-r1
+-      - posix-cc-wrappers=1-r6
+-      - readline=8.2.13-r3
+-      - scanelf=1.3.8-r4
+-      - sqlite-libs=3.49.2-r0
+-      - wolfi-baselayout=20230201-r20
+-      - zlib=1.3.1-r7
++      - busybox=1.37.0-r47
++      - ca-certificates-bundle=20250619-r5
++      - cyrus-sasl=2.1.28-r43
++      - gcc=15.1.0-r4
++      - gdbm=1.26-r0
++      - git=2.50.1-r1
++      - glibc-dev=2.41-r56
++      - glibc-locale-posix=2.41-r56
++      - glibc=2.41-r56
++      - gmp=6.3.0-r8
++      - heimdal-libs=7.8.0-r42
++      - isl=0.27-r4
++      - keyutils-libs=1.6.3-r36
++      - krb5-conf=1.0-r7
++      - krb5-libs=1.21.3-r45
++      - ld-linux=2.41-r56
++      - libatomic=15.1.0-r4
++      - libbrotlicommon1=1.1.0-r6
++      - libbrotlidec1=1.1.0-r6
++      - libcom_err=1.47.3-r0
++      - libcrypt1=2.41-r56
++      - libcrypto3=3.5.1-r1
++      - libcurl-openssl4=8.15.0-r4
++      - libexpat1=2.7.1-r2
++      - libgcc=15.1.0-r4
++      - libgo=15.1.0-r4
++      - libgomp=15.1.0-r4
++      - libidn2=2.3.8-r3
++      - libldap=2.6.10-r5
++      - libnghttp2-14=1.66.0-r1
++      - libpcre2-8-0=10.45-r3
++      - libpsl=0.21.5-r6
++      - libquadmath=15.1.0-r4
++      - libssl3=3.5.1-r1
++      - libstdc++-dev=15.1.0-r4
++      - libstdc++=15.1.0-r4
++      - libunistring=1.3-r4
++      - libverto=0.3.2-r6
++      - libxcrypt-dev=4.4.38-r3
++      - libxcrypt=4.4.38-r3
++      - libzstd1=1.5.7-r3
++      - linux-headers=6.16-r0
++      - make=4.4.1-r8
++      - mpc=1.3.1-r7
++      - mpfr=4.2.2-r2
++      - ncurses-terminfo-base=6.5_p20250621-r1
++      - ncurses=6.5_p20250621-r1
++      - nss-db=2.41-r56
++      - nss-hesiod=2.41-r56
++      - openssf-compiler-options=20240627-r26
++      - patch=2.8-r3
++      - pkgconf=2.5.1-r1
++      - posix-cc-wrappers=1-r7
++      - readline=8.3-r1
++      - scanelf=1.3.8-r5
++      - sqlite-libs=3.50.4-r0
++      - wolfi-baselayout=20230201-r23
++      - zlib=1.3.1-r51
+   accounts:
+     run-as: ""
+     users:
+@@ -435,7 +435,7 @@
+           ln -s libbz2.so.1.0.8 "/home/build/melange-out/libbz2-1"/usr/lib/libbz2.so.1
+           ln -s libbz2.so.1 "/home/build/melange-out/libbz2-1/usr/lib/libbz2.so.1.0"
+     description: bzip2 shared library
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: 2619f318eef93ed7f288a87b446626ed9eff6488
+     test:
+       environment:
+         contents:
+@@ -462,6 +462,7 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="libbz2-1" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+@@ -508,7 +509,7 @@
+       - runs: |
+           ln -s libbz2.so.1 "/home/build/melange-out/bzip2-dev"/usr/lib/libbz2.so
+     description: bzip2 headers
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: 2619f318eef93ed7f288a87b446626ed9eff6488
+     test:
+       environment:
+         contents:
+@@ -535,6 +536,7 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="bzip2-dev" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+@@ -547,15 +549,22 @@
+               if [ -n "" ]; then
+               	PACKAGE_DIR="/home/build/melange-out/"
+               fi
+-              if [ "$PACKAGE_DIR" == "/home/build/melange-out/bzip2-doc" ]; then
++              if [ "$PACKAGE_DIR" = "/home/build/melange-out/bzip2-doc" ]; then
+               	echo "ERROR: Package can not split files from itself!" && exit 1
+               fi
+-              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+-              	mkdir -p "/home/build/melange-out/bzip2-doc/usr/share"
+-              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/bzip2-doc/usr/share"
+-              fi
++              for mandir in \
++              	"$PACKAGE_DIR/usr/share/man" \
++              	"$PACKAGE_DIR/usr/local/share/man" \
++              	"$PACKAGE_DIR/usr/man"; do
++
++              	if [ -d "$mandir" ]; then
++              		mkdir -p "/home/build/melange-out/bzip2-doc/usr/share/man"
++              		mv "$mandir"/* "/home/build/melange-out/bzip2-doc/usr/share/man/"
++              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
++              	fi
++              done
+     description: bzip2 docs
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: 2619f318eef93ed7f288a87b446626ed9eff6488
+     test:
+       environment:
+         contents:
+@@ -596,7 +605,7 @@
+                 fi
+                 cd /
+                 doc_files=false
+-                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
++                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                 	if [ -f /"$doc_file" ]; then
+ 
+                 		man -l /"$doc_file" >/dev/null
+@@ -635,7 +644,9 @@
+   environment:
+     contents:
+       packages:
++        - apk-tools
+         - bzip2
++        - man-db
+     accounts:
+       run-as: ""
+       users:
+@@ -659,3 +670,86 @@
+         bzip2 --help
+         bzless --help
+         bzmore --help
++    - uses: test/no-docs
++      pipeline:
++        - name: primary package docs check
++          runs: |
++            primary_pkg=$(basename /home/build/melange-out/bzip2)
++            case "$primary_pkg" in
++            *-doc)
++            	echo "Skipping documentation package [$primary_pkg]"
++            	echo "Remove the \"test/no-docs\" pipeline from documentation packages"
++            	exit 0
++            	;;
++            esac
++            cd /
++            doc_violations=false
++            violation_count=0
++            has_manpages=false
++            has_infodir=false
++            default_paths="usr/share/man usr/local/share/man usr/man"
++            all_paths="$default_paths"
++            if command -v man >/dev/null 2>&1; then
++            	for path in $(man --path 2>/dev/null | tr ':' ' '); do
++            		clean_path=$(echo "$path" | sed 's|^/||')
++            		if [ -n "$clean_path" ]; then
++
++            			path_exists=false
++            			for existing_path in $all_paths; do
++            				if [ "$clean_path" = "$existing_path" ]; then
++            					path_exists=true
++            					break
++            				fi
++            			done
++
++            			if [ "$path_exists" = "false" ]; then
++            				all_paths="$all_paths $clean_path"
++            			fi
++            		fi
++            	done
++            fi
++            man_paths=""
++            for path in $all_paths; do
++            	if [ -z "$man_paths" ]; then
++            		man_paths="^$path/"
++            	else
++            		man_paths="$man_paths|^$path/"
++            	fi
++            done
++            for doc_file in $(apk info -qL "$primary_pkg" | grep -E "$man_paths"); do
++            	if [ -f "/$doc_file" ]; then
++            		if [ "$doc_violations" = "false" ]; then
++            			echo "Primary package [$primary_pkg] contains documentation files:"
++            			doc_violations=true
++            		fi
++            		has_manpages=true
++            		violation_count=$((violation_count + 1))
++            		echo "  /$doc_file (manual page)"
++            	fi
++            done
++            for doc_file in $(apk info -qL "$primary_pkg" | grep -E "^usr/share/info/|usr/local/share/info/"); do
++            	if [ -f "/$doc_file" ] && [ "$(basename "$doc_file")" != "dir" ]; then
++            		if [ "$doc_violations" = "false" ]; then
++            			echo "Primary package [$primary_pkg] contains documentation files:"
++            			doc_violations=true
++            		fi
++            		has_infodir=true
++            		violation_count=$((violation_count + 1))
++            		echo "  /$doc_file (info page)"
++            	fi
++            done
++            if [ "$doc_violations" = "true" ]; then
++            	echo ""
++            	echo "These files should be moved to a -doc subpackage."
++            	echo "Please add the following split pipeline(s):"
++            	if [ "$has_manpages" = "true" ]; then
++            		echo "  - split/manpages (for manual pages)"
++            	fi
++            	if [ "$has_infodir" = "true" ]; then
++            		echo "  - split/infodir (for GNU info pages)"
++            	fi
++            	echo ""
++            	echo "Total documentation files found: $violation_count"
++            	exit 1
++            fi
++            echo "Primary package [$primary_pkg] does not contain documentation files"

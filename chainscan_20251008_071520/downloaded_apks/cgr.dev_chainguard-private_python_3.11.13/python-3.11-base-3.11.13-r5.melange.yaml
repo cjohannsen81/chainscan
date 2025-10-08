@@ -1,0 +1,840 @@
+package:
+  name: python-3.11
+  version: 3.11.13
+  epoch: 5
+  description: the Python programming language
+  commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+  copyright:
+    - license: PSF-2.0
+  dependencies:
+    runtime:
+      - python-3.11-base=3.11.13-r5
+    provides:
+      - python3=3.11.999
+      - python-3=3.11.999
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.45-r1
+      - build-base=1-r8
+      - busybox=1.37.0-r50
+      - bzip2-dev=1.0.8-r21
+      - ca-certificates-bundle=20250619-r5
+      - cyrus-sasl=2.1.28-r44
+      - expat-dev=2.7.1-r3
+      - gcc=15.2.0-r1
+      - gdbm-dev=1.26-r1
+      - gdbm=1.26-r1
+      - git=2.51.0-r0
+      - glibc-dev=2.42-r0
+      - glibc-locale-posix=2.42-r0
+      - glibc=2.42-r0
+      - gmp=6.3.0-r8
+      - heimdal-libs=7.8.0-r42
+      - isl=0.27-r4
+      - jitterentropy-library-dev=3.6.3-r2
+      - jitterentropy-library=3.6.3-r2
+      - keyutils-libs=1.6.3-r37
+      - krb5-conf=1.0-r7
+      - krb5-libs=1.22.1-r1
+      - ld-linux=2.42-r0
+      - libatomic=15.2.0-r1
+      - libbrotlicommon1=1.1.0-r7
+      - libbrotlidec1=1.1.0-r7
+      - libbz2-1=1.0.8-r21
+      - libcom_err=1.47.3-r1
+      - libcrypt1=2.42-r0
+      - libcrypto3=3.5.2-r1
+      - libcurl-openssl4=8.15.0-r5
+      - libexpat1=2.7.1-r3
+      - libffi-dev=3.5.2-r1
+      - libffi=3.5.2-r1
+      - libgcc=15.2.0-r1
+      - libgo=15.2.0-r1
+      - libgomp=15.2.0-r1
+      - libidn2=2.3.8-r3
+      - libldap=2.6.10-r5
+      - libnghttp2-14=1.67.0-r0
+      - libpcre2-8-0=10.46-r0
+      - libpsl=0.21.5-r6
+      - libquadmath=15.2.0-r1
+      - libssl3=3.5.2-r1
+      - libstdc++-dev=15.2.0-r1
+      - libstdc++=15.2.0-r1
+      - libunistring=1.3-r4
+      - libverto=0.3.2-r6
+      - libxcrypt-dev=4.4.38-r4
+      - libxcrypt=4.4.38-r4
+      - libzstd1=1.5.7-r3
+      - linux-headers=6.16.4-r0
+      - make=4.4.1-r8
+      - mpc=1.3.1-r7
+      - mpdecimal-dev=4.0.1-r3
+      - mpdecimal=4.0.1-r3
+      - mpfr=4.2.2-r2
+      - ncurses-dev=6.5_p20250621-r1
+      - ncurses-terminfo-base=6.5_p20250621-r1
+      - ncurses=6.5_p20250621-r1
+      - nss-db=2.42-r0
+      - nss-hesiod=2.42-r0
+      - openssf-compiler-options=20240627-r27
+      - openssl-dev=3.5.2-r1
+      - patch=2.8-r3
+      - pkgconf=2.5.1-r1
+      - posix-cc-wrappers=1-r7
+      - readline-dev=8.3-r1
+      - readline=8.3-r1
+      - scanelf=1.3.8-r5
+      - sqlite-dev=3.50.4-r1
+      - sqlite-libs=3.50.4-r1
+      - sqlite=3.50.4-r1
+      - wolfi-baselayout=20230201-r23
+      - xz-dev=5.8.1-r2
+      - xz=5.8.1-r2
+      - zlib-dev=1.3.1-r51
+      - zlib=1.3.1-r51
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: git-checkout
+    with:
+      cherry-picks: |
+        3.11/b4ec17488eedec36d3c05fec127df71c0071f6cb: Remediate CVE-2025-8194
+      expected-commit: 498b971ea3673012a1d4b21860b229d55fc6e575
+      repository: https://github.com/python/cpython.git
+      tag: v3.11.13
+    pipeline:
+      - runs: |
+          #!/bin/sh
+          set -e
+          msg() { echo "[git checkout]" "$@"; }
+          fail() {
+          	msg FAIL "$@"
+          	exit 1
+          }
+          vr() {
+          	msg "execute:" "$@"
+          	"$@"
+          }
+          process_cherry_picks() {
+          	local cpicksf="$1" oifs="$IFS" count=0
+          	local fetched_branches=""
+          	local sdate=${SOURCE_DATE_EPOCH:-0}
+          	if [ "$sdate" -lt 315532800 ]; then
+          		msg "Setting commit date to Jan 1, 1980 (SOURCE_DATE_EPOCH found ${SOURCE_DATE_EPOCH})"
+          		sdate=315532800
+          	fi
+          	if [ -z "$cpicksf" ]; then
+          		return 0
+          	fi
+          	if [ ! -f "$cpicksf" ]; then
+          		msg "cherry picks input '$cpicksf' is not a file"
+          		return 1
+          	fi
+
+          	local line="" branch="" hash="" comment=""
+          	while IFS= read -r line; do
+
+          		line=${line%%#*}
+          		[ -z "$line" ] && continue
+
+          		if ! echo "$line" | grep -q ':'; then
+          			msg "Invalid format, expected '[branch/]commit: comment'. Found: $line"
+          			return 1
+          		fi
+
+          		branch=${line%%:*}
+          		comment=${line#*:}
+          		comment=$(
+          			set -f
+          			echo $comment
+          		)
+
+          		if [ -z "$comment" ]; then
+          			msg "Empty comment for cherry-pick: $line"
+          			return 1
+          		fi
+
+          		hash=${branch##*/}
+
+          		[ "$branch" != "$hash" ] && branch=${branch%/*} || branch=""
+
+          		if [ -n "$branch" ]; then
+          			case " $fetched_branches " in
+          			*" $branch "*) ;;
+          			*)
+          				vr git fetch origin $branch:$branch || {
+          					msg "failed to fetch branch $branch"
+          					return 1
+          				}
+          				fetched_branches="$fetched_branches $branch "
+          				;;
+          			esac
+          		fi
+
+          		vr env \
+          			GIT_COMMITTER_DATE="@$sdate" \
+          			git cherry-pick -x "$hash" || {
+          			msg "failed to cherry-pick $hash from branch $branch"
+          			return 1
+          		}
+
+          		msg "Cherry-picked $hash from $branch with comment: $comment"
+
+          		count=$((count + 1))
+          	done <"$cpicksf"
+
+          	if [ $count -gt 0 ]; then
+          		msg "applied $count cherry-pick(s). head is now $(git rev-parse HEAD)"
+          	fi
+          }
+          main() {
+          	local repo=$1 dest=${2:-.} depth=${3:-"unset"} branch=$4
+          	local tag=$5 expcommit=$6 recurse=${7:-false}
+          	local cherry_pick="$8"
+          	msg "repo='$repo' dest='$dest' depth='$depth' branch='$branch'" \
+          		"tag='$tag' expcommit='$expcommit' recurse='$recurse'"
+
+          	case "$recurse" in
+          	true | false) : ;;
+          	*) fail "recurse must be true or false, not '$recurse'" ;;
+          	esac
+
+          	[ -n "$repo" ] || fail "repository not provided"
+
+          	if [ -z "$branch" ] && [ -z "$tag" ]; then
+          		msg "Warning: you have not specified a branch or tag."
+          	elif [ -n "$branch" ] && [ -n "$tag" ]; then
+          		fail "both branch ($branch) and tag ($tag) are specified."
+          	fi
+
+          	[ -n "$expcommit" ] ||
+          		msg "Warning: no expected-commit"
+
+          	local flags="" depthflag="" dest_fullpath="" workdir=""
+          	local remote="origin" rcfile="" rc="" quiet="--quiet"
+          	flags="--config=advice.detachedHead=false"
+          	[ -n "$branch" ] && flags="$flags --branch=$branch"
+          	[ -n "$tag" ] && flags="$flags --branch=$tag"
+          	[ "$recurse" = "true" ] && flags="$flags --recurse-submodules"
+
+          	if [ "$depth" = "unset" ]; then
+          		depth=1
+          		if [ -n "$branch" -a -n "$expcommit" ]; then
+
+          			depth=-1
+          		fi
+          	fi
+
+          	[ "$depth" = "-1" ] || depthflag="--depth=$depth"
+
+          	workdir=$(mktemp -d)
+          	rcfile=$(mktemp)
+          	mkdir -p "$dest"
+          	dest_fullpath=$(realpath "$dest")
+
+          	vr git config --global --add safe.directory "$workdir"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	vr git clone $quiet "--origin=$remote" \
+          		"--config=user.name=Melange Build" \
+          		"--config=user.email=melange-build@cgr.dev" \
+          		$flags \
+          		${depthflag:+"$depthflag"} "$repo" "$workdir"
+
+          	vr cd "$workdir"
+          	msg "tar -c . | tar -C \"$dest_fullpath\" -x"
+          	(
+          		tar -c .
+          		echo $? >"$rcfile"
+          	) | tar -C "$dest_fullpath" -x --no-same-owner
+          	read rc <"$rcfile" || fail "failed to read rc file"
+          	[ $rc -eq 0 ] || fail "tar creation in $workdir failed"
+
+          	rm -rf "$workdir"
+          	vr cd "$dest_fullpath"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	local foundcommit="" tagobj=""
+          	if [ -z "$tag" ]; then
+          		foundcommit=$(git rev-parse --verify HEAD)
+          		if [ -n "$expcommit" ] && [ "$expcommit" != "$foundcommit" ]; then
+          			if [ "$depth" = "-1" ]; then
+          				msg "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, performing reset"
+          				vr git reset --hard "$expcommit"
+          			else
+          				fail "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, set depth to -1 to attempt a reset"
+          			fi
+          		fi
+          		msg "tip of ${branch:-HEAD} is commit $foundcommit"
+          		process_cherry_picks "$cherry_pick" || fail "failed to apply cherry-pick"
+          		return 0
+          	fi
+
+          	vr git fetch $quiet $remote ${depthflag:-"$depthflag"} --no-tags \
+          		"+refs/tags/$tag:refs/$remote/tags/$tag"
+          	vr git checkout $quiet "$remote/tags/$tag"
+
+          	foundcommit=$(git rev-parse --verify HEAD)
+          	if [ -z "$expcommit" ] || [ "$expcommit" = "$foundcommit" ]; then
+          		msg "tag $tag is $foundcommit"
+          	else
+
+          		tagobj=$(git rev-parse --verify --end-of-options \
+          			"refs/$remote/tags/$tag")
+          		if [ "$expcommit" != "$tagobj" ]; then
+          			[ "$tagobj" != "$expcommit" ] &&
+          				msg "tag object hash was $tagobj"
+          			fail "Expected commit $expcommit for $tag, found $foundcommit"
+          		fi
+
+          		msg "Warning: The provided expected-commit ($expcommit)"
+          		msg "was the hash of the annotated tag object for $tag."
+          		msg "Update to set expected-commit to $foundcommit"
+          	fi
+
+          	process_cherry_picks "$cherry_pick" ||
+          		fail "failed to apply cherry-pick"
+
+          	return 0
+          }
+          cpickf=$(mktemp) || {
+          	echo "failed mktemp"
+          	exit 1
+          }
+          cat >"$cpickf" <<"END_CHERRY_PICKS"
+          3.11/b4ec17488eedec36d3c05fec127df71c0071f6cb: Remediate CVE-2025-8194
+
+          END_CHERRY_PICKS
+          main \
+          	"https://github.com/python/cpython.git" "." \
+          	"unset" "" \
+          	"v3.11.13" "498b971ea3673012a1d4b21860b229d55fc6e575" \
+          	"false" "$cpickf"
+          rm -f "$cpickf"
+  - name: Force use of system libraries
+    runs: |
+      rm -rf Modules/expat \
+      	Modules/_ctypes/darwin* \
+      	Modules/_ctypes/libffi*
+  - uses: patch
+    with:
+      patches: gh-118224.patch gh-127301.patch gh-135462.patch
+    pipeline:
+      - runs: |
+          series=''
+          if [ -z $series ]; then
+          	if [ -n 'gh-118224.patch gh-127301.patch gh-135462.patch' ]; then
+          		series=$(mktemp)
+          		echo 'gh-118224.patch gh-127301.patch gh-135462.patch' | awk '{ for(i = 1; i <= NF; i++) { print $i; } }' >$series
+          	else
+          		echo "ERROR: Neither patches or series was set."
+          		exit 1
+          	fi
+          fi
+          grep -v -E '^(#|$)' $series | (while read patchfile; do
+          	patch '-p1' --fuzz=2 --verbose <$patchfile
+          done)
+  - name: Configure
+    runs: |
+      ./configure \
+      	--host=x86_64-pc-linux-gnu \
+      	--build=x86_64-pc-linux-gnu \
+      	--target=x86_64-pc-linux-gnu \
+      	--prefix=/usr \
+      	--enable-ipv6 \
+      	--enable-loadable-sqlite-extensions \
+      	$([ -d /usr/lib/oldglibc ] || echo --enable-optimizations) \
+      	--enable-shared \
+      	--with-lto \
+      	--with-computed-gotos \
+      	--with-dbmliborder=gdbm:ndbm \
+      	--with-system-expat \
+      	--with-system-libmpdec \
+      	--without-ensurepip \
+      	--with-builtin-hashlib-hashes=blake2 \
+      	--with-wheel-pkg-dir=/usr/share/python-wheels
+  - uses: autoconf/make
+    pipeline:
+      - runs: |
+          make -C "." -j$(nproc) V=1
+  - uses: autoconf/make-install
+    pipeline:
+      - runs: |
+          make -C "." install DESTDIR="/home/build/melange-out/python-3.11" V=1
+      - runs: |
+          find /home/build/melange-out/python-3.11 -name '*.la' -print -exec rm \{} \;
+  - runs: |
+      find /home/build/melange-out/python-3.11/usr/lib -type f -name 'libpython*.a' -exec rm -rf '{}' +
+      find /home/build/melange-out/python-3.11/usr/lib -type d -name 'test' -exec rm -rf '{}' +
+      find /home/build/melange-out/python-3.11/usr/lib -type d -name 'tests' -exec rm -rf '{}' +
+      find /home/build/melange-out/python-3.11/usr/lib -type d -name 'idle_test' -exec rm -rf '{}' +
+      cd /home/build/melange-out/python-3.11/usr/bin
+      rm -f idle3* 2to3*
+      rm /home/build/melange-out/python-3.11/usr/lib/libpython3.so
+      ln -s python3 /home/build/melange-out/python-3.11/usr/bin/python
+      cd /home/build/melange-out/python-3.11/usr/lib/python3.11
+      rm site-packages/README.txt
+      rmdir site-packages
+  - runs: |
+      rm -R /home/build/melange-out/python-3.11/usr/lib/python3.11/ensurepip/_bundled/
+  - runs: |
+      find /home/build/melange-out/python-3.11/usr/lib -type f -name '*.pyc' -exec rm -rf '{}' +
+      find /home/build/melange-out/python-3.11/usr/lib -type f -name '*.pyo' -exec rm -rf '{}' +
+      export LD_LIBRARY_PATH="/home/build/melange-out/python-3.11/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+      /home/build/melange-out/python-3.11/usr/bin/python3.11 -m compileall --invalidation-mode=unchecked-hash \
+      	-r100 /home/build/melange-out/python-3.11/usr/lib/
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/python-3.11
+subpackages:
+  - name: python-3.11-base
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/python-3.11-base/usr/bin /home/build/melange-out/python-3.11-base/usr/lib
+          mv /home/build/melange-out/python-3.11/usr/bin/python3.11 \
+          	/home/build/melange-out/python-3.11/usr/bin/pydoc3.11 \
+          	/home/build/melange-out/python-3.11-base/usr/bin
+          mv -v /home/build/melange-out/python-3.11/usr/lib/python3.11 \
+          	/home/build/melange-out/python-3.11-base/usr/lib
+          mv -v /home/build/melange-out/python-3.11/usr/lib/libpython3.11.so.* \
+          	/home/build/melange-out/python-3.11-base/usr/lib
+          d=usr/include/python3.11
+          mkdir -p "/home/build/melange-out/python-3.11-base"/$d
+          mv "/home/build/melange-out/python-3.11"/$d/pyconfig.h "/home/build/melange-out/python-3.11-base"/$d/
+          d="usr/lib/python3.11"
+          mkdir -p "/home/build/melange-out/python-3.11/$d"
+          mv -v "/home/build/melange-out/python-3.11-base/$d"/config-3.11* \
+          	"/home/build/melange-out/python-3.11/$d"
+    dependencies:
+      runtime:
+        - py3-setuptools-wheel
+        - py3-pip-wheel
+    description: python-3.11 without /usr/bin/python3
+    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - python-3.11-base
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--exclude-files="" \
+                	--packages="python-3.11-base" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+        - runs: |
+            python3.11 version-check.py 3.11.13
+        - name: Verify venv installs expected packages
+          runs: |
+            set +x
+            d=$(mktemp -d)
+            echo "$ python3.11 -m venv $d"
+            python3.11 -m venv "$d"
+            echo "$ $d/bin/pip list"
+            $d/bin/pip list | tee "$d/list.txt"
+            wd=/usr/share/python-wheels
+            for pkg in setuptools pip; do
+            	set -- "$wd"/$pkg-*.whl
+            	[ $# -eq 1 ] || {
+            		echo "ERROR: found $# wheels in $wd matching $pkg-*.whl"
+            		exit 1
+            	}
+            	[ -f "$1" ] || {
+            		echo "ERROR: $wd/$pkg-*.whl ('$1') was not a file"
+            		exit 1
+            	}
+
+            	wheel=${1}
+            	tmp=${wheel##*/}
+            	tmp=${tmp#*-}
+            	ver=${tmp%%-*}
+            	if ! grep -q "${pkg}[ ]\+${ver}$" "$d/list.txt"; then
+            		echo "FAIL: did not find '$pkg==$ver' in venv"
+            		echo "pip list had:"
+            		sed 's,^,>,' "$d/list.txt"
+            		exit 1
+            	fi
+            	echo "PASS: venv installed '$pkg==$ver'"
+            done
+            rm -Rf "$d"
+  - name: python-3.11-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/python-3.11"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" = "/home/build/melange-out/python-3.11-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              for mandir in \
+              	"$PACKAGE_DIR/usr/share/man" \
+              	"$PACKAGE_DIR/usr/local/share/man" \
+              	"$PACKAGE_DIR/usr/man"; do
+
+              	if [ -d "$mandir" ]; then
+              		mkdir -p "/home/build/melange-out/python-3.11-doc/usr/share/man"
+              		mv "$mandir"/* "/home/build/melange-out/python-3.11-doc/usr/share/man/"
+              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
+              	fi
+              done
+    description: python3 documentation
+    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - grep
+            - man-db
+            - python-3.11-doc
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/python-3.11-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+  - name: python-3.11-dev
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/python-3.11-dev/usr/bin
+          mv -v /home/build/melange-out/python-3.11/usr/bin/python3-config /home/build/melange-out/python-3.11-dev/usr/bin
+          d="usr/lib/pkgconfig"
+          mkdir -p "/home/build/melange-out/python-3.11-dev/$d"
+          mv -v \
+          	"/home/build/melange-out/python-3.11"/$d/python3-embed.pc \
+          	"/home/build/melange-out/python-3.11"/$d/python3.pc \
+          	"/home/build/melange-out/python-3.11-dev/$d/"
+    dependencies:
+      runtime:
+        - python-3.11=3.11.13-r5
+        - python-3.11-base-dev=3.11.13-r5
+      provides:
+        - python3-dev=3.11.13-r5
+        - python-3-dev=3.11.13-r5
+    description: python3 development headers
+    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+    test:
+      environment:
+        contents:
+          packages:
+            - python-3.11-dev
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/virtualpackage
+          with:
+            real-pkg-name: python-3.11-dev
+            virtual-pkg-name: python3-dev
+          pipeline:
+            - name: virtual package installation checks
+              runs: |
+                get_installed_version() {
+                	pkg="$1"
+                	apk list installed "${pkg}" 2>/dev/null | awk '{print $1}'
+                }
+                virtual_pkg_name_and_version="python3-dev-3.11.13-r5"
+                maybe_installed_pkg_name_and_version="$(get_installed_version python3-dev)"
+                if [ "${virtual_pkg_name_and_version}" == "${maybe_installed_pkg_name_and_version}" ]; then
+                	echo "FAIL: ${virtual_pkg_name_and_version} is installed." >&2
+                	exit 1
+                fi
+                echo "PASS: ${virtual_pkg_name_and_version} is not installed."
+                if [ "python-3.11-dev" != "" ]; then
+                	maybe_real_pkg_installed_name_and_version="$(get_installed_version python-3.11-dev)"
+                	if [ "${maybe_real_pkg_installed_name_and_version}" != "" ]; then
+                		echo "PASS: ${maybe_real_pkg_installed_name_and_version} is installed."
+                		exit 0
+                	else
+                		echo "FAIL: No real package python-3.11-dev installed for virtual package python3-dev." >&2
+                		exit 1
+                	fi
+                fi
+            - name: virtual package configuration checks
+              runs: |
+                virtual_pkg="python3-dev"
+                real_pkg="python-3.11-dev"
+                if [ "$real_pkg" = "" ]; then
+                	echo "SKIP: no 'real-pkg-name' was set, so skipping evaluation."
+                	exit 0
+                fi
+                declared_provides=$(apk info --installed --provides --quiet "$real_pkg" | grep -v '^$')
+                if echo "$declared_provides" | awk -F'=' '{print $1}' | grep -qx "${virtual_pkg}"; then
+                	echo "PASS: real package [$real_pkg] correctly declares virtual package [$virtual_pkg]."
+                	exit 0
+                else
+                	echo "FAIL: real package [$real_pkg] does not declare virtual package [$virtual_pkg] in 'provides'." >&2
+                	exit 1
+                fi
+        - uses: test/virtualpackage
+          with:
+            real-pkg-name: python-3.11-dev
+            virtual-pkg-name: python-3-dev
+          pipeline:
+            - name: virtual package installation checks
+              runs: |
+                get_installed_version() {
+                	pkg="$1"
+                	apk list installed "${pkg}" 2>/dev/null | awk '{print $1}'
+                }
+                virtual_pkg_name_and_version="python-3-dev-3.11.13-r5"
+                maybe_installed_pkg_name_and_version="$(get_installed_version python-3-dev)"
+                if [ "${virtual_pkg_name_and_version}" == "${maybe_installed_pkg_name_and_version}" ]; then
+                	echo "FAIL: ${virtual_pkg_name_and_version} is installed." >&2
+                	exit 1
+                fi
+                echo "PASS: ${virtual_pkg_name_and_version} is not installed."
+                if [ "python-3.11-dev" != "" ]; then
+                	maybe_real_pkg_installed_name_and_version="$(get_installed_version python-3.11-dev)"
+                	if [ "${maybe_real_pkg_installed_name_and_version}" != "" ]; then
+                		echo "PASS: ${maybe_real_pkg_installed_name_and_version} is installed."
+                		exit 0
+                	else
+                		echo "FAIL: No real package python-3.11-dev installed for virtual package python-3-dev." >&2
+                		exit 1
+                	fi
+                fi
+            - name: virtual package configuration checks
+              runs: |
+                virtual_pkg="python-3-dev"
+                real_pkg="python-3.11-dev"
+                if [ "$real_pkg" = "" ]; then
+                	echo "SKIP: no 'real-pkg-name' was set, so skipping evaluation."
+                	exit 0
+                fi
+                declared_provides=$(apk info --installed --provides --quiet "$real_pkg" | grep -v '^$')
+                if echo "$declared_provides" | awk -F'=' '{print $1}' | grep -qx "${virtual_pkg}"; then
+                	echo "PASS: real package [$real_pkg] correctly declares virtual package [$virtual_pkg]."
+                	exit 0
+                else
+                	echo "FAIL: real package [$real_pkg] does not declare virtual package [$virtual_pkg] in 'provides'." >&2
+                	exit 1
+                fi
+  - name: python-3.11-base-dev
+    pipeline:
+      - runs: |
+          d="usr/lib/python3.11"
+          mkdir -p "/home/build/melange-out/python-3.11-base-dev/$d"
+          mv -v "/home/build/melange-out/python-3.11"/$d/config-3.11* \
+          	"/home/build/melange-out/python-3.11-base-dev"/$d
+      - uses: split/dev
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/python-3.11"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/python-3.11-base-dev" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in usr/include usr/lib/pkgconfig usr/share/pkgconfig \
+              	usr/share/aclocal usr/share/gettext \
+              	usr/bin/*-config usr/bin/*_config usr/share/vala/vapi \
+              	usr/share/gir-[0-9]* usr/share/qt*/mkspecs \
+              	usr/lib/qt*/mkspecs \
+              	usr/lib/cmake usr/share/cmake \
+              	usr/lib/glade/modules usr/share/glade/catalogs \
+              	$(find . -name include -type d) \
+              	$(find $libdirs -name '*.a' 2>/dev/null) \
+              	$(find $libdirs -name '*.[cho]' \
+              		-o -name '*.prl' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/python-3.11-base-dev/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+              for i in lib/*.so usr/lib/*.so; do
+              	if [ -L "$i" ]; then
+              		mkdir -p "/home/build/melange-out/python-3.11-base-dev"/"${i%/*}"
+              		mv "$i" "/home/build/melange-out/python-3.11-base-dev/$i" || return 1
+              	fi
+              done
+    dependencies:
+      runtime:
+        - python-3.11-base=3.11.13-r5
+    description: python3 development headers
+    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  shared: true
+  github:
+    identifier: python/cpython
+    strip-prefix: v
+    tag-filter: v3.11
+    use-tag: true
+var-transforms:
+  - from: ${{package.name}}
+    match: '-'
+    replace: ""
+    to: python
+  - from: ${{package.version}}
+    match: (\d).(\d+).(\d+)
+    replace: $1.$2
+    to: pyversion
+test:
+  environment:
+    contents:
+      packages:
+        - python-3.11
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - runs: |
+        python version-check.py 3.11.13
+        python3 version-check.py 3.11.13
+        pydoc3 --version
+        pydoc3 --help
+        python --version
+        python --help
+        python3 --version
+        python3 --help
+    - name: Verify working python3 -m venv
+      runs: |
+        d=$(mktemp -d)
+        python3 -m venv "$d"
+        $d/bin/pip list
+        $d/bin/pip check
+        rm -Rf "$d"

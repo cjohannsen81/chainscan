@@ -1,0 +1,1536 @@
+package:
+  name: glibc
+  version: "2.42"
+  epoch: 0
+  description: the GNU C library
+  commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  copyright:
+    - license: LGPL-2.1-or-later
+  dependencies:
+    runtime:
+      - '!musl'
+      - glibc-locale-posix
+      - libgcc
+      - merged-lib
+      - merged-sbin
+      - merged-usrsbin
+      - wolfi-baselayout
+  resources:
+    cpu: "16"
+    memory: 16Gi
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - bash=5.3-r3
+      - binutils=2.45-r0
+      - bison=3.8.2-r53
+      - build-base=1-r8
+      - busybox=1.37.0-r48
+      - ca-certificates-bundle=20250619-r5
+      - coreutils=9.7-r4
+      - cyrus-sasl=2.1.28-r44
+      - flex=2.6.4-r8
+      - gawk=5.3.2-r3
+      - gcc=15.2.0-r0
+      - gdbm=1.26-r1
+      - git=2.51.0-r0
+      - glibc-dev=2.41-r56
+      - glibc-locale-posix=2.41-r56
+      - glibc=2.41-r56
+      - gmp-dev=6.3.0-r8
+      - gmp=6.3.0-r8
+      - grep=3.12-r3
+      - heimdal-libs=7.8.0-r42
+      - isl=0.27-r4
+      - keyutils-libs=1.6.3-r37
+      - krb5-conf=1.0-r7
+      - krb5-libs=1.22.1-r0
+      - ld-linux=2.41-r56
+      - libacl1=2.3.2-r53
+      - libatomic=15.2.0-r0
+      - libattr1=2.5.2-r53
+      - libbrotlicommon1=1.1.0-r7
+      - libbrotlidec1=1.1.0-r7
+      - libbz2-1=1.0.8-r21
+      - libcom_err=1.47.3-r1
+      - libcrypt1=2.41-r56
+      - libcrypto3=3.5.2-r1
+      - libcurl-openssl4=8.15.0-r4
+      - libexpat1=2.7.1-r3
+      - libffi=3.5.2-r1
+      - libgcc=15.2.0-r0
+      - libgo=15.2.0-r0
+      - libgomp=15.2.0-r0
+      - libidn2=2.3.8-r3
+      - libldap=2.6.10-r5
+      - libnghttp2-14=1.66.0-r1
+      - libpcre2-8-0=10.45-r3
+      - libpsl=0.21.5-r6
+      - libquadmath=15.2.0-r0
+      - libssl3=3.5.2-r1
+      - libstdc++-dev=15.2.0-r0
+      - libstdc++=15.2.0-r0
+      - libunistring=1.3-r4
+      - libuuid=2.41.1-r4
+      - libverto=0.3.2-r6
+      - libxcrypt-dev=4.4.38-r4
+      - libxcrypt=4.4.38-r4
+      - libzstd1=1.5.7-r3
+      - linux-headers=6.16.3-r0
+      - m4=1.4.20-r5
+      - make=4.4.1-r8
+      - mpc=1.3.1-r7
+      - mpdecimal=4.0.1-r3
+      - mpfr=4.2.2-r2
+      - ncurses-terminfo-base=6.5_p20250621-r1
+      - ncurses=6.5_p20250621-r1
+      - nettle=3.10.2-r1
+      - nss-db=2.41-r56
+      - nss-hesiod=2.41-r56
+      - openssf-compiler-options=20240627-r26
+      - patch=2.8-r3
+      - perl=5.42.0-r1
+      - pkgconf=2.5.1-r1
+      - posix-cc-wrappers=1-r7
+      - py3-pip-wheel=25.2-r0
+      - python-3.13-base=3.13.7-r0
+      - python-3.13=3.13.7-r0
+      - rdfind=1.7.0-r2
+      - readline=8.3-r1
+      - scanelf=1.3.8-r5
+      - sqlite-libs=3.50.4-r1
+      - texinfo=7.2-r4
+      - wolfi-baselayout=20230201-r23
+      - xz=5.8.1-r2
+      - zlib=1.3.1-r51
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    CPPFLAGS: ""
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: d2097651cc57834dbfcaa102ddfacae0d86cfb66
+      repository: https://repo.or.cz/glibc.git
+      tag: glibc-2.42
+    pipeline:
+      - runs: |
+          #!/bin/sh
+          set -e
+          msg() { echo "[git checkout]" "$@"; }
+          fail() {
+          	msg FAIL "$@"
+          	exit 1
+          }
+          vr() {
+          	msg "execute:" "$@"
+          	"$@"
+          }
+          process_cherry_picks() {
+          	local cpicksf="$1" oifs="$IFS" count=0
+          	local fetched_branches=""
+          	local sdate=${SOURCE_DATE_EPOCH:-0}
+          	if [ "$sdate" -lt 315532800 ]; then
+          		msg "Setting commit date to Jan 1, 1980 (SOURCE_DATE_EPOCH found ${SOURCE_DATE_EPOCH})"
+          		sdate=315532800
+          	fi
+          	if [ -z "$cpicksf" ]; then
+          		return 0
+          	fi
+          	if [ ! -f "$cpicksf" ]; then
+          		msg "cherry picks input '$cpicksf' is not a file"
+          		return 1
+          	fi
+
+          	local line="" branch="" hash="" comment=""
+          	while IFS= read -r line; do
+
+          		line=${line%%#*}
+          		[ -z "$line" ] && continue
+
+          		if ! echo "$line" | grep -q ':'; then
+          			msg "Invalid format, expected '[branch/]commit: comment'. Found: $line"
+          			return 1
+          		fi
+
+          		branch=${line%%:*}
+          		comment=${line#*:}
+          		comment=$(
+          			set -f
+          			echo $comment
+          		)
+
+          		if [ -z "$comment" ]; then
+          			msg "Empty comment for cherry-pick: $line"
+          			return 1
+          		fi
+
+          		hash=${branch##*/}
+
+          		[ "$branch" != "$hash" ] && branch=${branch%/*} || branch=""
+
+          		if [ -n "$branch" ]; then
+          			case " $fetched_branches " in
+          			*" $branch "*) ;;
+          			*)
+          				vr git fetch origin $branch:$branch || {
+          					msg "failed to fetch branch $branch"
+          					return 1
+          				}
+          				fetched_branches="$fetched_branches $branch "
+          				;;
+          			esac
+          		fi
+
+          		vr env \
+          			GIT_COMMITTER_DATE="@$sdate" \
+          			git cherry-pick -x "$hash" || {
+          			msg "failed to cherry-pick $hash from branch $branch"
+          			return 1
+          		}
+
+          		msg "Cherry-picked $hash from $branch with comment: $comment"
+
+          		count=$((count + 1))
+          	done <"$cpicksf"
+
+          	if [ $count -gt 0 ]; then
+          		msg "applied $count cherry-pick(s). head is now $(git rev-parse HEAD)"
+          	fi
+          }
+          main() {
+          	local repo=$1 dest=${2:-.} depth=${3:-"unset"} branch=$4
+          	local tag=$5 expcommit=$6 recurse=${7:-false}
+          	local cherry_pick="$8"
+          	msg "repo='$repo' dest='$dest' depth='$depth' branch='$branch'" \
+          		"tag='$tag' expcommit='$expcommit' recurse='$recurse'"
+
+          	case "$recurse" in
+          	true | false) : ;;
+          	*) fail "recurse must be true or false, not '$recurse'" ;;
+          	esac
+
+          	[ -n "$repo" ] || fail "repository not provided"
+
+          	if [ -z "$branch" ] && [ -z "$tag" ]; then
+          		msg "Warning: you have not specified a branch or tag."
+          	elif [ -n "$branch" ] && [ -n "$tag" ]; then
+          		fail "both branch ($branch) and tag ($tag) are specified."
+          	fi
+
+          	[ -n "$expcommit" ] ||
+          		msg "Warning: no expected-commit"
+
+          	local flags="" depthflag="" dest_fullpath="" workdir=""
+          	local remote="origin" rcfile="" rc="" quiet="--quiet"
+          	flags="--config=advice.detachedHead=false"
+          	[ -n "$branch" ] && flags="$flags --branch=$branch"
+          	[ -n "$tag" ] && flags="$flags --branch=$tag"
+          	[ "$recurse" = "true" ] && flags="$flags --recurse-submodules"
+
+          	if [ "$depth" = "unset" ]; then
+          		depth=1
+          		if [ -n "$branch" -a -n "$expcommit" ]; then
+
+          			depth=-1
+          		fi
+          	fi
+
+          	[ "$depth" = "-1" ] || depthflag="--depth=$depth"
+
+          	workdir=$(mktemp -d)
+          	rcfile=$(mktemp)
+          	mkdir -p "$dest"
+          	dest_fullpath=$(realpath "$dest")
+
+          	vr git config --global --add safe.directory "$workdir"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	vr git clone $quiet "--origin=$remote" \
+          		"--config=user.name=Melange Build" \
+          		"--config=user.email=melange-build@cgr.dev" \
+          		$flags \
+          		${depthflag:+"$depthflag"} "$repo" "$workdir"
+
+          	vr cd "$workdir"
+          	msg "tar -c . | tar -C \"$dest_fullpath\" -x"
+          	(
+          		tar -c .
+          		echo $? >"$rcfile"
+          	) | tar -C "$dest_fullpath" -x --no-same-owner
+          	read rc <"$rcfile" || fail "failed to read rc file"
+          	[ $rc -eq 0 ] || fail "tar creation in $workdir failed"
+
+          	rm -rf "$workdir"
+          	vr cd "$dest_fullpath"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	local foundcommit="" tagobj=""
+          	if [ -z "$tag" ]; then
+          		foundcommit=$(git rev-parse --verify HEAD)
+          		if [ -n "$expcommit" ] && [ "$expcommit" != "$foundcommit" ]; then
+          			if [ "$depth" = "-1" ]; then
+          				msg "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, performing reset"
+          				vr git reset --hard "$expcommit"
+          			else
+          				fail "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, set depth to -1 to attempt a reset"
+          			fi
+          		fi
+          		msg "tip of ${branch:-HEAD} is commit $foundcommit"
+          		process_cherry_picks "$cherry_pick" || fail "failed to apply cherry-pick"
+          		return 0
+          	fi
+
+          	vr git fetch $quiet $remote ${depthflag:-"$depthflag"} --no-tags \
+          		"+refs/tags/$tag:refs/$remote/tags/$tag"
+          	vr git checkout $quiet "$remote/tags/$tag"
+
+          	foundcommit=$(git rev-parse --verify HEAD)
+          	if [ -z "$expcommit" ] || [ "$expcommit" = "$foundcommit" ]; then
+          		msg "tag $tag is $foundcommit"
+          	else
+
+          		tagobj=$(git rev-parse --verify --end-of-options \
+          			"refs/$remote/tags/$tag")
+          		if [ "$expcommit" != "$tagobj" ]; then
+          			[ "$tagobj" != "$expcommit" ] &&
+          				msg "tag object hash was $tagobj"
+          			fail "Expected commit $expcommit for $tag, found $foundcommit"
+          		fi
+
+          		msg "Warning: The provided expected-commit ($expcommit)"
+          		msg "was the hash of the annotated tag object for $tag."
+          		msg "Update to set expected-commit to $foundcommit"
+          	fi
+
+          	process_cherry_picks "$cherry_pick" ||
+          		fail "failed to apply cherry-pick"
+
+          	return 0
+          }
+          cpickf=$(mktemp) || {
+          	echo "failed mktemp"
+          	exit 1
+          }
+          cat >"$cpickf" <<"END_CHERRY_PICKS"
+
+          END_CHERRY_PICKS
+          main \
+          	"https://repo.or.cz/glibc.git" "." \
+          	"unset" "" \
+          	"glibc-2.42" "d2097651cc57834dbfcaa102ddfacae0d86cfb66" \
+          	"false" "$cpickf"
+          rm -f "$cpickf"
+  - uses: patch
+    with:
+      patches: Disable-AVX512VL.patch
+    pipeline:
+      - runs: |
+          series=''
+          if [ -z $series ]; then
+          	if [ -n 'Disable-AVX512VL.patch' ]; then
+          		series=$(mktemp)
+          		echo 'Disable-AVX512VL.patch' | awk '{ for(i = 1; i <= NF; i++) { print $i; } }' >$series
+          	else
+          		echo "ERROR: Neither patches or series was set."
+          		exit 1
+          	fi
+          fi
+          grep -v -E '^(#|$)' $series | (while read patchfile; do
+          	patch '-p1' --fuzz=2 --verbose <$patchfile
+          done)
+  - name: Set up build directory
+    runs: |
+      mkdir build
+  - name: Configure glibc
+    runs: |
+      cd build
+      echo "user-defined-trusted-dirs=/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:/lib:/lib64" >>configparms.base
+      echo "slibdir=/usr/lib" >>configparms.base
+      echo "libdir=/usr/lib" >>configparms.base
+      echo "rootsbindir=/usr/bin" >>configparms.base
+      echo "build-programs=no" >configparms
+      if [ x86_64 == "x86_64" ]; then
+      	echo "rtlddir=/lib64" >>configparms.base
+      else
+      	echo "rtlddir=/lib" >>configparms.base
+      fi
+      cat configparms.base >>configparms
+      ../configure \
+      	--prefix=/usr \
+      	--libdir=/usr/lib \
+      	--datadir=/usr/share \
+      	--includedir=/usr/include \
+      	--sbindir=/usr/bin \
+      	--host=x86_64-pc-linux-gnu \
+      	--build=x86_64-pc-linux-gnu \
+      	--enable-bind-now \
+      	--enable-fortify-source \
+      	--enable-stackguard-randomization \
+      	--enable-stack-protector=strong \
+      	--enable-cet \
+      	--with-pkgversion="glibc-2.42-r0" \
+      	--disable-werror \
+      	--disable-crypt \
+      	--enable-kernel=4.9
+  - runs: |
+      make -C build -j$(nproc)
+  - runs: |
+      echo "build-programs=yes" >build/configparms
+      cat build/configparms.base >>build/configparms
+      make -C build -j$(nproc)
+  - runs: |
+      make -C build -j$(nproc) install DESTDIR="/home/build/melange-out/glibc"
+  - name: Run the glibc testsuite, not blocking on failures for now
+    runs: |
+      make -C build -j$(nproc) check || true
+  - name: Set up ldconfig
+    runs: |
+      mkdir -p "/home/build/melange-out/glibc"/etc
+      cp vendor/ld.so.conf "/home/build/melange-out/glibc"/etc
+      mkdir -p "/home/build/melange-out/glibc"/etc/ld.so.conf.d
+      cp vendor/ld.so.conf.d/*.conf "/home/build/melange-out/glibc"/etc/ld.so.conf.d
+      mkdir -p /home/build/melange-out/glibc/etc/apk/commit_hooks.d
+      cp ldconfig-commit.sh -p /home/build/melange-out/glibc/etc/apk/commit_hooks.d/
+  - name: Clean up /etc/ld.so.cache
+    runs: |
+      rm /home/build/melange-out/glibc/etc/ld.so.cache
+  - name: Clean up documentation
+    runs: |
+      rm -rf /home/build/melange-out/glibc/usr/share/info
+  - name: Generate and install locale data
+    runs: |
+      make -C build -j$(nproc) localedata/install-locale-files DESTDIR="/home/build/melange-out/glibc"
+  - name: Usrmerge /usr/sbin
+    runs: |
+      mkdir -p "/home/build/melange-out/glibc"/usr/bin
+      mv "/home/build/melange-out/glibc"/usr/sbin/* "/home/build/melange-out/glibc"/usr/bin
+      rmdir "/home/build/melange-out/glibc"/usr/sbin
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/glibc
+subpackages:
+  - name: glibc-testresults
+    pipeline:
+      - runs: |
+          resultdir="/home/build/melange-out/glibc-testresults"/usr/share/glibc-testresults
+          mkdir -p $resultdir
+          cd build/
+          find . \( -name "*.test-result" -o -name "*.out" \) \
+          	-exec sh -c 'dir=$(dirname $1); mkdir -p $2/$dir; cp $1 $2/$dir' _ {} $resultdir \;
+          cp tests.sum $resultdir
+    dependencies:
+      runtime:
+        - merged-lib
+        - wolfi-baselayout
+    description: Test results and logs from the current GLIBC build - for Wolfi development only
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  - name: ld-linux
+    pipeline:
+      - pipeline:
+          - if: '"x86_64" == ''aarch64'''
+            runs: |
+              mkdir -p "/home/build/melange-out/ld-linux"/usr/lib
+              mv "/home/build/melange-out/glibc"/lib/ld-linux-aarch64.so.1 "/home/build/melange-out/ld-linux"/usr/lib/
+              rmdir "/home/build/melange-out/glibc"/lib
+          - if: '"x86_64" == ''x86_64'''
+            runs: |
+              mkdir -p "/home/build/melange-out/ld-linux"/usr/lib
+              mv "/home/build/melange-out/glibc"/lib64/ld-linux-x86-64.so.2 "/home/build/melange-out/ld-linux"/usr/lib/
+              rmdir "/home/build/melange-out/glibc"/lib64
+        assertions:
+          required-steps: 1
+      - runs: |
+          mkdir -p "/home/build/melange-out/ld-linux"/etc
+          mv "/home/build/melange-out/glibc"/etc/ld.so.* "/home/build/melange-out/ld-linux"/etc/
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+      provider-priority: "10"
+    description: the GLIBC ELF interpreter
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - gcc
+            - glibc-dev
+            - ld-linux
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - name: Check lib64 and apk audit locations of ld-linux
+          runs: |
+            ld_linux_found=false
+            for f in /lib64/ld-linux-*; do
+            	[ -e "$f" ] && ld_linux_found=true
+            done
+            [ "$ld_linux_found" = "true" ]
+            [ -z "$(apk audit --full | grep ld-linux)" ]
+        - name: Test usage of /etc/ld.so.conf.d/ snippets
+          runs: |
+            tmpdir="$(mktemp -d)"
+            tmplibdir="$(mktemp -d)"
+            ldcfg="/etc/ld.so.conf.d/test-snippet.conf"
+            cleanup() {
+            	rm -f "$ldcfg"
+            	rm -rf "$tmpdir" "$tmplibdir"
+            }
+            trap cleanup EXIT
+            cat >"$tmpdir/ldsoconfdotd.c" <<EOF
+            #include <stdio.h>
+
+            void ldsoconfdotd_test(void) {
+              printf("Calling %s\n", __func__);
+            }
+            EOF
+            cat >"$tmpdir/test.c" <<EOF
+            void ldsoconfdotd_test(void);
+            int main(void) {
+              ldsoconfdotd_test();
+            }
+            EOF
+            gcc -c -fpic "$tmpdir/ldsoconfdotd.c" -o "$tmpdir/ldsoconfdotd.o"
+            gcc -shared -o "$tmplibdir/libldsoconfdotd.so" \
+            	"$tmpdir/ldsoconfdotd.o"
+            echo "$tmplibdir" >"$ldcfg"
+            ldconfig
+            LIBRARY_PATH="$tmplibdir" \
+            	gcc "$tmpdir/test.c" -o "$tmpdir/test" -lldsoconfdotd
+            "$tmpdir"/test
+        - name: Confirm that we do not ship/own /etc/ld.so.cache
+          runs: |
+            if apk info -L "ld-linux" | grep '^etc/ld\.so\.cache$'; then
+            	exit 1
+            fi
+            exit 0
+  - name: glibc-dev
+    pipeline:
+      - uses: split/dev
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/glibc"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/glibc-dev" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in usr/include usr/lib/pkgconfig usr/share/pkgconfig \
+              	usr/share/aclocal usr/share/gettext \
+              	usr/bin/*-config usr/bin/*_config usr/share/vala/vapi \
+              	usr/share/gir-[0-9]* usr/share/qt*/mkspecs \
+              	usr/lib/qt*/mkspecs \
+              	usr/lib/cmake usr/share/cmake \
+              	usr/lib/glade/modules usr/share/glade/catalogs \
+              	$(find . -name include -type d) \
+              	$(find $libdirs -name '*.a' 2>/dev/null) \
+              	$(find $libdirs -name '*.[cho]' \
+              		-o -name '*.prl' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/glibc-dev/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+              for i in lib/*.so usr/lib/*.so; do
+              	if [ -L "$i" ]; then
+              		mkdir -p "/home/build/melange-out/glibc-dev"/"${i%/*}"
+              		mv "$i" "/home/build/melange-out/glibc-dev/$i" || return 1
+              	fi
+              done
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-dev"/usr/lib
+          [ -f "/home/build/melange-out/glibc"/usr/lib/libc.so ] && mv "/home/build/melange-out/glibc"/usr/lib/libc.so "/home/build/melange-out/glibc-dev"/usr/lib/
+          [ -f "/home/build/melange-out/glibc"/usr/lib/libm.so ] && mv "/home/build/melange-out/glibc"/usr/lib/libm.so "/home/build/melange-out/glibc-dev"/usr/lib/
+    dependencies:
+      runtime:
+        - libxcrypt-dev
+        - linux-headers
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: GLIBC development headers
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  - name: glibc-iconv
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-iconv"/usr/lib
+          mv "/home/build/melange-out/glibc"/usr/lib/gconv "/home/build/melange-out/glibc-iconv"/usr/lib/
+          mkdir -p "/home/build/melange-out/glibc-iconv"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/iconvconfig "/home/build/melange-out/glibc-iconv"/usr/bin
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: GLIBC iconv tables
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-iconv
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            iconvconfig --version
+            iconvconfig --help
+  - name: glibc-locales
+    pipeline:
+      - uses: split/locales
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/glibc"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/glibc-locales" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              if [ -d "$PACKAGE_DIR"/usr/share/locale ]; then
+              	mkdir -p "/home/build/melange-out/glibc-locales"/usr/share
+              	mv "$PACKAGE_DIR"/usr/share/locale "/home/build/melange-out/glibc-locales"/usr/share/locale
+              fi
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locales"/usr/share
+          mv "/home/build/melange-out/glibc"/usr/share/i18n "/home/build/melange-out/glibc-locales"/usr/share/i18n
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: GLIBC locale data
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  - name: tzutils
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/tzutils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/tzselect "/home/build/melange-out/tzutils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/zdump "/home/build/melange-out/tzutils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/zic "/home/build/melange-out/tzutils"/usr/bin
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Timezone utilities
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - tzutils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            tzselect --version
+            tzselect --help
+            zdump --version
+            zdump --help
+            zic --version
+            zic --help
+  - name: posix-libc-utils
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/gencat "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/getconf "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/getent "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/iconv "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/ldd "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/locale "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/pldd "/home/build/melange-out/posix-libc-utils"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/libexec "/home/build/melange-out/posix-libc-utils"/usr
+    dependencies:
+      runtime:
+        - bash
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: POSIX XCU utilities included with the C library
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            gencat --version
+            gencat --help
+            getconf --version
+            getconf --help
+            getent --version
+            getent --help
+            iconv --version
+            iconv --help
+            ldd --version
+            ldd --help
+            locale --version
+            locale --help
+            pldd --version
+            pldd --help
+  - name: localedef
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/localedef"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/localedef "/home/build/melange-out/localedef"/usr/bin
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Tool for defining GLIBC locales
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - localedef
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            localedef --version
+            localedef --help
+  - name: sotruss
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/sotruss"/usr/lib/audit
+          mkdir -p "/home/build/melange-out/sotruss"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/sotruss "/home/build/melange-out/sotruss"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/lib/audit/* "/home/build/melange-out/sotruss"/usr/lib/audit/
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Shared object tracing tool
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - sotruss
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            sotruss --version
+            sotruss --help
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--exclude-files="" \
+                	--packages="sotruss" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: nscd
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/nscd"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/nscd "/home/build/melange-out/nscd"/usr/bin/
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: NSS caching daemon
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - nscd
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            nscd --version
+            nscd --help
+  - name: nss-db
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/nss-db"/usr/bin
+          mkdir -p "/home/build/melange-out/nss-db"/usr/lib
+          mkdir -p "/home/build/melange-out/nss-db"/var
+          mv "/home/build/melange-out/glibc"/usr/bin/makedb "/home/build/melange-out/nss-db"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/lib/libnss_db.so.2 "/home/build/melange-out/nss-db"/usr/lib
+          mv "/home/build/melange-out/glibc"/var/db "/home/build/melange-out/nss-db"/var
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: NSS module for database lookups
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - nss-db
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            makedb --version
+            makedb --help
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--exclude-files="" \
+                	--packages="nss-db" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: nss-hesiod
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/nss-hesiod"/usr/lib
+          mv "/home/build/melange-out/glibc"/usr/lib/libnss_hesiod.so.2 "/home/build/melange-out/nss-hesiod"/usr/lib
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: NSS module for hesiod lookups
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - nss-hesiod
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--exclude-files="" \
+                	--packages="nss-hesiod" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: pcprofiledump
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/pcprofiledump"/usr/lib
+          mv "/home/build/melange-out/glibc"/usr/lib/libpcprofile.so "/home/build/melange-out/pcprofiledump"/usr/lib
+          mkdir -p "/home/build/melange-out/pcprofiledump"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/pcprofiledump "/home/build/melange-out/pcprofiledump"/usr/bin
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: PC profiling tool
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - pcprofiledump
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            pcprofiledump --version
+            pcprofiledump --help
+  - name: glibc-tracing
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-tracing"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/mtrace "/home/build/melange-out/glibc-tracing"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/xtrace "/home/build/melange-out/glibc-tracing"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/sprof "/home/build/melange-out/glibc-tracing"/usr/bin
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: GLIBC tracing and profiling utilities
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-tracing
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            sprof --version
+            sprof --help
+            xtrace --version
+            xtrace --help
+  - name: sln
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/sln"/usr/bin
+          mv "/home/build/melange-out/glibc"/usr/bin/sln "/home/build/melange-out/sln"/usr/bin
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Staticly-linked symbolic link tool
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - sln
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            sln --version
+            sln --help
+  - name: libcrypt1
+    dependencies:
+      runtime:
+        - glibc=2.42-r0
+        - libxcrypt
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+      provides:
+        - so:libcrypt.so.1=1
+      provider-priority: "10"
+    description: Password hashing library included with glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  - name: glibc-locale-posix
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-posix"/usr/lib/locale
+          mv "/home/build/melange-out/glibc"/usr/lib/locale/C.utf8 "/home/build/melange-out/glibc-locale-posix"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: POSIX locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+  - name: glibc-locale-ca
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-ca"/usr/lib/locale
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/ca ] ||
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/ca_* "/home/build/melange-out/glibc-locale-ca"/usr/lib/locale/
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/ca ] &&
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/ca "/home/build/melange-out/glibc-locale-ca"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-ca"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Catalan locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-ca
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-ca
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            matches=$(echo "$out" | grep "^ca") || {
+            	echo "FAIL: $pkg did not install any locales per 'locale --all-locales'"
+            	echo "$ locale --all-locales"
+            	echo "$out"
+            	exit 1
+            }
+            echo "PASS: $pkg shipped" $matches
+  - name: glibc-locale-de
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-de"/usr/lib/locale
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/de ] ||
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/de_* "/home/build/melange-out/glibc-locale-de"/usr/lib/locale/
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/de ] &&
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/de "/home/build/melange-out/glibc-locale-de"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-de"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: German locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-de
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-de
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            matches=$(echo "$out" | grep "^de") || {
+            	echo "FAIL: $pkg did not install any locales per 'locale --all-locales'"
+            	echo "$ locale --all-locales"
+            	echo "$out"
+            	exit 1
+            }
+            echo "PASS: $pkg shipped" $matches
+  - name: glibc-locale-en
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-en"/usr/lib/locale
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/en ] ||
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/en_* "/home/build/melange-out/glibc-locale-en"/usr/lib/locale/
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/en ] &&
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/en "/home/build/melange-out/glibc-locale-en"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-en"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: English locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-en
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-en
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            matches=$(echo "$out" | grep "^en") || {
+            	echo "FAIL: $pkg did not install any locales per 'locale --all-locales'"
+            	echo "$ locale --all-locales"
+            	echo "$out"
+            	exit 1
+            }
+            echo "PASS: $pkg shipped" $matches
+  - name: glibc-locale-es
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-es"/usr/lib/locale
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/es ] ||
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/es_* "/home/build/melange-out/glibc-locale-es"/usr/lib/locale/
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/es ] &&
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/es "/home/build/melange-out/glibc-locale-es"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-es"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: Spanish locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-es
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-es
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            matches=$(echo "$out" | grep "^es") || {
+            	echo "FAIL: $pkg did not install any locales per 'locale --all-locales'"
+            	echo "$ locale --all-locales"
+            	echo "$out"
+            	exit 1
+            }
+            echo "PASS: $pkg shipped" $matches
+  - name: glibc-locale-fr
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-fr"/usr/lib/locale
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/fr ] ||
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/fr_* "/home/build/melange-out/glibc-locale-fr"/usr/lib/locale/
+          [ -d "/home/build/melange-out/glibc"/usr/lib/locale/fr ] &&
+          	mv "/home/build/melange-out/glibc"/usr/lib/locale/fr "/home/build/melange-out/glibc-locale-fr"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-fr"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: French locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-fr
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-fr
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            matches=$(echo "$out" | grep "^fr") || {
+            	echo "FAIL: $pkg did not install any locales per 'locale --all-locales'"
+            	echo "$ locale --all-locales"
+            	echo "$out"
+            	exit 1
+            }
+            echo "PASS: $pkg shipped" $matches
+  - name: glibc-locale-extra
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/glibc-locale-extra"/usr/lib/locale
+          mv "/home/build/melange-out/glibc"/usr/lib/locale/* "/home/build/melange-out/glibc-locale-extra"/usr/lib/locale/
+          rdfind -makehardlinks true "/home/build/melange-out/glibc-locale-extra"/usr/lib/locale/
+    dependencies:
+      runtime:
+        - merged-sbin
+        - merged-usrsbin
+        - wolfi-baselayout
+    description: All other extra locale data for glibc
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    test:
+      environment:
+        contents:
+          packages:
+            - glibc-locale-extra
+            - posix-libc-utils
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            set +x
+            pkg=glibc-locale-extra
+            out=$(locale --all-locales) || {
+            	echo "FAIL: locale --all-locales failed for $pkg"
+            	exit 1
+            }
+            for lang in ca de en es fr; do
+            	matches=$(echo "$out" | grep "^$lang") && {
+            		echo "FAIL: $pkg installs one of the stand-alone-package locales"
+            		echo "$ locale --all-locales"
+            		echo "$out"
+            		exit 1
+            	}
+            done
+            echo "PASS: $pkg correctly does not ship main locales"
+  - name: libc-bin
+    dependencies:
+      runtime:
+        - localedef
+        - merged-lib
+        - merged-sbin
+        - merged-usrsbin
+        - posix-libc-utils
+        - tzutils
+        - wolfi-baselayout
+    description: 'GNU C Library: Binaries'
+    commit: eeaa6d73d4eb96d96308dfda6c7a78ce52ee0453
+    checks:
+      disabled:
+        - empty
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 5401
+test:
+  environment:
+    contents:
+      packages:
+        - gcc
+        - glibc
+        - glibc-dev
+        - ldd-check
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - runs: |
+        cd /usr/lib/locale
+        locales=$(ls | grep -v C.utf8 || true)
+        if [[ -n "${locales}" ]]; then
+        	for locale in ${locales}; do
+        		echo "Error: locale $locale found in main glibc package"
+        	done
+        	exit 1
+        fi
+        ldconfig --version
+        ldconfig --help
+        ld.so --version
+        ld.so --help
+    - uses: test/tw/ldd-check
+      pipeline:
+        - name: check for missing library dependencies using ldd
+          runs: |
+            ldd-check \
+            	--files="" \
+            	--exclude-files="" \
+            	--packages="glibc" \
+            	--extra-library-paths="" \
+            	--verbose="false"
+    - name: Confirm that we're still compatible with current gcc
+      runs: |
+        cat <<EOF >gcc_test.cc
+        #include <thread>
+        #include <future>
+        int main(void)
+        {
+          return 0;
+        }
+        EOF
+        g++ -o test_build gcc_test.cc
+    - name: Verify apk bootstrap works
+      runs: |
+        mkdir -p /tmp/glibc-bash/etc/apk
+        cp -r /etc/apk/repositories /etc/apk/keys /tmp/glibc-bash/etc/apk
+        apk add --initdb --root /tmp/glibc-bash glibc bash-binsh &>bootstrap.log || true
+        cat bootstrap.log
+        grep -e ERROR: bootstrap.log | grep -v 'updating directory permissions' >errors.log || true
+        grep -e ERROR: errors.log && exit 1
+        mkdir -p /tmp/glibc-busybox/etc/apk
+        cp -r /etc/apk/repositories /etc/apk/keys /tmp/glibc-busybox/etc/apk
+        apk add --initdb --root /tmp/glibc-busybox glibc busybox &>bootstrap.log || true
+        cat bootstrap.log
+        grep -e ERROR: bootstrap.log | grep -v 'updating directory permissions' >errors.log || true
+        grep -e ERROR: errors.log && exit 1
+    - name: Verify that frame unwinding doesn't crash (when glibc is compiled with hardening)
+      runs: |
+        cat >glibc-hardening-test.c <<_EOF_
+        #include <execinfo.h>
+
+        int
+        main(int argc, char *argv[])
+        {
+          void *a[4096];
+          backtrace (a, 100);
+          return 0;
+        }
+        _EOF_
+        gcc glibc-hardening-test.c -o glibc-hardening-test
+        for i in $(seq 1000); do ./glibc-hardening-test; done

@@ -1,0 +1,226 @@
+======================================
+Package: readline
+Version 1: 8.2.13-r4 (python:3.11.12)
+Version 2: 8.3-r1 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/readline-8.2.13-r4.melange.yaml	2025-05-28 06:35:48
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/readline-8.3-r1.melange.yaml	2025-07-18 05:49:48
+@@ -1,9 +1,9 @@
+ package:
+   name: readline
+-  version: 8.2.13
+-  epoch: 4
++  version: "8.3"
++  epoch: 1
+   description: GNU readline library
+-  commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++  commit: b0ab5e2e7fad981f5ca302a7b7f999f307e1ba85
+   copyright:
+     - license: GPL-3.0-or-later
+   resources: {}
+@@ -15,47 +15,46 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - binutils=2.44-r2
++      - binutils=2.44-r10
+       - build-base=1-r8
+-      - busybox=1.37.0-r41
+-      - ca-certificates-bundle=20241121-r42
+-      - gcc=14.2.0-r12
+-      - glibc-dev=2.41-r4
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - gmp=6.3.0-r4
+-      - isl=0.27-r0
+-      - ld-linux=2.41-r4
+-      - libatomic=14.2.0-r12
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r2
+-      - libgcc=14.2.0-r12
+-      - libgo=14.2.0-r12
+-      - libgomp=14.2.0-r12
+-      - libquadmath=14.2.0-r12
+-      - libssl3=3.5.0-r2
+-      - libstdc++-dev=14.2.0-r12
+-      - libstdc++=14.2.0-r12
+-      - libxcrypt-dev=4.4.38-r1
+-      - libxcrypt=4.4.38-r1
++      - busybox=1.37.0-r46
++      - ca-certificates-bundle=20250619-r2
++      - gcc=15.1.0-r2
++      - glibc-dev=2.41-r54
++      - glibc-locale-posix=2.41-r54
++      - glibc=2.41-r54
++      - gmp=6.3.0-r8
++      - isl=0.27-r3
++      - ld-linux=2.41-r54
++      - libatomic=15.1.0-r2
++      - libcrypt1=2.41-r54
++      - libcrypto3=3.5.1-r0
++      - libgcc=15.1.0-r2
++      - libgo=15.1.0-r2
++      - libgomp=15.1.0-r2
++      - libquadmath=15.1.0-r2
++      - libssl3=3.5.1-r0
++      - libstdc++-dev=15.1.0-r2
++      - libstdc++=15.1.0-r2
++      - libxcrypt-dev=4.4.38-r2
++      - libxcrypt=4.4.38-r2
+       - libzstd1=1.5.7-r2
+-      - linux-headers=6.15-r1
+-      - make=4.4.1-r5
+-      - mpc=1.3.1-r5
+-      - mpfr=4.2.2-r0
+-      - ncurses-dev=6.5_p20241228-r2
+-      - ncurses-terminfo-base=6.5_p20241228-r2
+-      - ncurses=6.5_p20241228-r2
+-      - nss-db=2.41-r4
+-      - nss-hesiod=2.41-r4
+-      - openssf-compiler-options=20240627-r20
+-      - patch=2.8-r0
+-      - pkgconf=2.4.3-r2
+-      - posix-cc-wrappers=1-r6
++      - linux-headers=6.15.6-r1
++      - make=4.4.1-r8
++      - mpc=1.3.1-r7
++      - mpfr=4.2.2-r2
++      - ncurses-dev=6.5_p20250621-r0
++      - ncurses-terminfo-base=6.5_p20250621-r0
++      - ncurses=6.5_p20250621-r0
++      - nss-db=2.41-r54
++      - nss-hesiod=2.41-r54
++      - openssf-compiler-options=20240627-r25
++      - pkgconf=2.5.1-r1
++      - posix-cc-wrappers=1-r7
+       - scanelf=1.3.8-r4
+-      - wget=1.25.0-r1
+-      - wolfi-baselayout=20230201-r20
+-      - zlib=1.3.1-r7
++      - wget=1.25.0-r3
++      - wolfi-baselayout=20230201-r23
++      - zlib=1.3.1-r51
+   accounts:
+     run-as: ""
+     users:
+@@ -81,19 +80,19 @@
+ pipeline:
+   - uses: fetch
+     with:
+-      expected-sha256: 0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656
++      expected-sha256: fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc
+       purl-name: readline
+-      purl-version: 8.2.13
+-      uri: https://ftp.gnu.org/gnu/readline/readline-8.2.13.tar.gz
++      purl-version: "8.3"
++      uri: https://ftpmirror.gnu.org/gnu/readline/readline-8.3.tar.gz
+     pipeline:
+       - runs: |
+-          if [ "0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656" == "" ] && [ "" == "" ]; then
++          if [ "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc" == "" ] && [ "" == "" ]; then
+           	printf "One of expected-sha256 or expected-sha512 is required"
+           	exit 1
+           fi
+-          bn=$(basename https://ftp.gnu.org/gnu/readline/readline-8.2.13.tar.gz)
+-          if [ ! "0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656" == "" ]; then
+-          	fn="/var/cache/melange/sha256:0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656"
++          bn=$(basename https://ftpmirror.gnu.org/gnu/readline/readline-8.3.tar.gz)
++          if [ ! "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc" == "" ]; then
++          	fn="/var/cache/melange/sha256:fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc"
+           	if [ -f $fn ]; then
+           		printf "fetch: found $fn in cache\n"
+           		cp $fn $bn
+@@ -106,12 +105,12 @@
+           	fi
+           fi
+           if [ ! -f $bn ]; then
+-          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://ftp.gnu.org/gnu/readline/readline-8.2.13.tar.gz'
++          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://ftpmirror.gnu.org/gnu/readline/readline-8.3.tar.gz'
+           fi
+-          if [ "0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656" != "" ]; then
+-          	printf "fetch: Expected sha256: 0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656\n"
++          if [ "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc" != "" ]; then
++          	printf "fetch: Expected sha256: fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc\n"
+           	sum=$(sha256sum $bn | awk '{print $1}')
+-          	if [ "0e5be4d2937e8bd9b7cd60d46721ce79f88a33415dd68c2d738fb5924638f656" != "$sum" ]; then
++          	if [ "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc" != "$sum" ]; then
+           		printf "fetch: Expected sha256 does not match found: $sum\n"
+           		exit 1
+           	fi
+@@ -129,25 +128,6 @@
+           if [ "false" = "true" ]; then
+           	rm $bn
+           fi
+-  - uses: patch
+-    with:
+-      patches: fix-rl_do_undo-crash.patch
+-      strip-components: "0"
+-    pipeline:
+-      - runs: |
+-          series=''
+-          if [ -z $series ]; then
+-          	if [ -n 'fix-rl_do_undo-crash.patch' ]; then
+-          		series=$(mktemp)
+-          		echo 'fix-rl_do_undo-crash.patch' | awk '{ for(i = 1; i <= NF; i++) { print $i; } }' >$series
+-          	else
+-          		echo "ERROR: Neither patches or series was set."
+-          		exit 1
+-          	fi
+-          fi
+-          grep -v -E '^(#|$)' $series | (while read patchfile; do
+-          	patch '-p0' --fuzz=2 --verbose <$patchfile
+-          done)
+   - name: Configure
+     runs: |
+       ./configure \
+@@ -186,17 +166,24 @@
+               if [ -n "" ]; then
+               	PACKAGE_DIR="/home/build/melange-out/"
+               fi
+-              if [ "$PACKAGE_DIR" == "/home/build/melange-out/readline-doc" ]; then
++              if [ "$PACKAGE_DIR" = "/home/build/melange-out/readline-doc" ]; then
+               	echo "ERROR: Package can not split files from itself!" && exit 1
+-              fi
+-              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+-              	mkdir -p "/home/build/melange-out/readline-doc/usr/share"
+-              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/readline-doc/usr/share"
+               fi
++              for mandir in \
++              	"$PACKAGE_DIR/usr/share/man" \
++              	"$PACKAGE_DIR/usr/local/share/man" \
++              	"$PACKAGE_DIR/usr/man"; do
++
++              	if [ -d "$mandir" ]; then
++              		mkdir -p "/home/build/melange-out/readline-doc/usr/share/man"
++              		mv "$mandir"/* "/home/build/melange-out/readline-doc/usr/share/man/"
++              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
++              	fi
++              done
+       - runs: |
+           mkdir -p /home/build/melange-out/readline-doc/usr/share/doc
+           mv /home/build/melange-out/readline/usr/share/doc/readline /home/build/melange-out/readline-doc/usr/share/doc/readline
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: b0ab5e2e7fad981f5ca302a7b7f999f307e1ba85
+     test:
+       environment:
+         contents:
+@@ -237,7 +224,7 @@
+                 fi
+                 cd /
+                 doc_files=false
+-                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
++                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                 	if [ -f /"$doc_file" ]; then
+ 
+                 		man -l /"$doc_file" >/dev/null
+@@ -310,7 +297,7 @@
+       runtime:
+         - readline
+     description: GNU readline headers
+-    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
++    commit: b0ab5e2e7fad981f5ca302a7b7f999f307e1ba85
+     test:
+       environment:
+         contents:
