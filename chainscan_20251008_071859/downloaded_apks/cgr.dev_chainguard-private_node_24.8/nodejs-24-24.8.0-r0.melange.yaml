@@ -1,0 +1,544 @@
+package:
+  name: nodejs-24
+  version: 24.8.0
+  epoch: 0
+  description: JavaScript runtime built on V8 engine
+  commit: 21336ef289a6dcd26f191c941a010ad045fd7af9
+  copyright:
+    - license: MIT
+  dependencies:
+    provides:
+      - nodejs=24.8.0-r0
+  resources:
+    cpu: "33"
+    memory: 64Gi
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - apk-tools=2.14.10-r8
+      - binutils=2.45-r1
+      - brotli-dev=1.1.0-r7
+      - brotli=1.1.0-r7
+      - build-base=1-r8
+      - busybox=1.37.0-r50
+      - c-ares-dev=1.34.5-r3
+      - c-ares=1.34.5-r3
+      - ca-certificates-bundle=20250619-r6
+      - cyrus-sasl=2.1.28-r44
+      - gcc=15.2.0-r2
+      - gdbm=1.26-r1
+      - git=2.51.0-r1
+      - glibc-dev=2.42-r0
+      - glibc-locale-posix=2.42-r0
+      - glibc=2.42-r0
+      - gmp=6.3.0-r8
+      - heimdal-libs=7.8.0-r42
+      - icu-dev=77.1-r1
+      - icu77-data-full=77.1-r1
+      - icu=77.1-r1
+      - isl=0.27-r4
+      - jitterentropy-library-dev=3.6.3-r2
+      - jitterentropy-library=3.6.3-r2
+      - keyutils-libs=1.6.3-r37
+      - krb5-conf=1.0-r7
+      - krb5-libs=1.22.1-r1
+      - ld-linux=2.42-r0
+      - libatomic=15.2.0-r2
+      - libbrotlicommon1=1.1.0-r7
+      - libbrotlidec1=1.1.0-r7
+      - libbrotlienc1=1.1.0-r7
+      - libbz2-1=1.0.8-r21
+      - libcom_err=1.47.3-r1
+      - libcrypt1=2.42-r0
+      - libcrypto3=3.5.2-r1
+      - libcurl-openssl4=8.16.0-r0
+      - libev=4.33-r9
+      - libexpat1=2.7.1-r3
+      - libffi=3.5.2-r1
+      - libgcc=15.2.0-r2
+      - libgo=15.2.0-r2
+      - libgomp=15.2.0-r2
+      - libicu77=77.1-r1
+      - libidn2=2.3.8-r3
+      - libldap=2.6.10-r5
+      - libnghttp2-14=1.67.0-r0
+      - libpcre2-8-0=10.46-r0
+      - libpsl=0.21.5-r6
+      - libquadmath=15.2.0-r2
+      - libssl3=3.5.2-r1
+      - libstdc++-dev=15.2.0-r2
+      - libstdc++=15.2.0-r2
+      - libunistring=1.3-r4
+      - libuuid=2.41.1-r4
+      - libuv-dev=1.51.0-r2
+      - libuv=1.51.0-r2
+      - libverto=0.3.2-r6
+      - libxcrypt-dev=4.4.38-r4
+      - libxcrypt=4.4.38-r4
+      - libzstd1=1.5.7-r3
+      - linux-headers=6.16.6-r0
+      - make=4.4.1-r8
+      - mpc=1.3.1-r7
+      - mpdecimal=4.0.1-r3
+      - mpfr=4.2.2-r2
+      - ncurses-terminfo-base=6.5_p20250621-r1
+      - ncurses=6.5_p20250621-r1
+      - nghttp2-dev=1.67.0-r0
+      - nghttp2=1.67.0-r0
+      - nss-db=2.42-r0
+      - nss-hesiod=2.42-r0
+      - openssf-compiler-options=20240627-r27
+      - openssl-dev=3.5.2-r1
+      - pkgconf=2.5.1-r1
+      - posix-cc-wrappers=1-r7
+      - py3-pip-wheel=25.2-r0
+      - py3.13-jinja2=3.1.6-r1
+      - py3.13-markupsafe=3.0.2-r3
+      - py3.13-setuptools=80.9.0-r2
+      - python-3.13-base=3.13.7-r1
+      - readline=8.3-r1
+      - samurai=1.2-r3
+      - scanelf=1.3.8-r5
+      - sqlite-libs=3.50.4-r1
+      - wolfi-base=1-r7
+      - wolfi-baselayout=20230201-r23
+      - wolfi-keys=1-r12
+      - xz=5.8.1-r2
+      - zlib-dev=1.3.1-r51
+      - zlib=1.3.1-r51
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    CXXFLAGS: -fdelete-null-pointer-checks
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: f9ec1b63e17f24a38b7835bb703c7e2bebe0674d
+      repository: https://github.com/nodejs/node.git
+      tag: v24.8.0
+    pipeline:
+      - runs: |
+          #!/bin/sh
+          set -e
+          msg() { echo "[git checkout]" "$@"; }
+          fail() {
+          	msg FAIL "$@"
+          	exit 1
+          }
+          vr() {
+          	msg "execute:" "$@"
+          	"$@"
+          }
+          process_cherry_picks() {
+          	local cpicksf="$1" oifs="$IFS" count=0
+          	local fetched_branches=""
+          	local sdate=${SOURCE_DATE_EPOCH:-0}
+          	if [ "$sdate" -lt 315532800 ]; then
+          		msg "Setting commit date to Jan 1, 1980 (SOURCE_DATE_EPOCH found ${SOURCE_DATE_EPOCH})"
+          		sdate=315532800
+          	fi
+          	if [ -z "$cpicksf" ]; then
+          		return 0
+          	fi
+          	if [ ! -f "$cpicksf" ]; then
+          		msg "cherry picks input '$cpicksf' is not a file"
+          		return 1
+          	fi
+
+          	local line="" branch="" hash="" comment=""
+          	while IFS= read -r line; do
+
+          		line=${line%%#*}
+          		[ -z "$line" ] && continue
+
+          		if ! echo "$line" | grep -q ':'; then
+          			msg "Invalid format, expected '[branch/]commit: comment'. Found: $line"
+          			return 1
+          		fi
+
+          		branch=${line%%:*}
+          		comment=${line#*:}
+          		comment=$(
+          			set -f
+          			echo $comment
+          		)
+
+          		if [ -z "$comment" ]; then
+          			msg "Empty comment for cherry-pick: $line"
+          			return 1
+          		fi
+
+          		hash=${branch##*/}
+
+          		[ "$branch" != "$hash" ] && branch=${branch%/*} || branch=""
+
+          		if [ -n "$branch" ]; then
+          			case " $fetched_branches " in
+          			*" $branch "*) ;;
+          			*)
+          				vr git fetch origin $branch:$branch || {
+          					msg "failed to fetch branch $branch"
+          					return 1
+          				}
+          				fetched_branches="$fetched_branches $branch "
+          				;;
+          			esac
+          		fi
+
+          		vr env \
+          			GIT_COMMITTER_DATE="@$sdate" \
+          			git cherry-pick -x "$hash" || {
+          			msg "failed to cherry-pick $hash from branch $branch"
+          			return 1
+          		}
+
+          		msg "Cherry-picked $hash from $branch with comment: $comment"
+
+          		count=$((count + 1))
+          	done <"$cpicksf"
+
+          	if [ $count -gt 0 ]; then
+          		msg "applied $count cherry-pick(s). head is now $(git rev-parse HEAD)"
+          	fi
+          }
+          main() {
+          	local repo=$1 dest=${2:-.} depth=${3:-"unset"} branch=$4
+          	local tag=$5 expcommit=$6 recurse=${7:-false}
+          	local cherry_pick="$8"
+          	msg "repo='$repo' dest='$dest' depth='$depth' branch='$branch'" \
+          		"tag='$tag' expcommit='$expcommit' recurse='$recurse'"
+
+          	case "$recurse" in
+          	true | false) : ;;
+          	*) fail "recurse must be true or false, not '$recurse'" ;;
+          	esac
+
+          	[ -n "$repo" ] || fail "repository not provided"
+
+          	if [ -z "$branch" ] && [ -z "$tag" ]; then
+          		msg "Warning: you have not specified a branch or tag."
+          	elif [ -n "$branch" ] && [ -n "$tag" ]; then
+          		fail "both branch ($branch) and tag ($tag) are specified."
+          	fi
+
+          	[ -n "$expcommit" ] ||
+          		msg "Warning: no expected-commit"
+
+          	local flags="" depthflag="" dest_fullpath="" workdir=""
+          	local remote="origin" rcfile="" rc="" quiet="--quiet"
+          	flags="--config=advice.detachedHead=false"
+          	[ -n "$branch" ] && flags="$flags --branch=$branch"
+          	[ -n "$tag" ] && flags="$flags --branch=$tag"
+          	[ "$recurse" = "true" ] && flags="$flags --recurse-submodules"
+
+          	if [ "$depth" = "unset" ]; then
+          		depth=1
+          		if [ -n "$branch" -a -n "$expcommit" ]; then
+
+          			depth=-1
+          		fi
+          	fi
+
+          	[ "$depth" = "-1" ] || depthflag="--depth=$depth"
+
+          	workdir=$(mktemp -d)
+          	rcfile=$(mktemp)
+          	mkdir -p "$dest"
+          	dest_fullpath=$(realpath "$dest")
+
+          	vr git config --global --add safe.directory "$workdir"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	vr git clone $quiet "--origin=$remote" \
+          		"--config=user.name=Melange Build" \
+          		"--config=user.email=melange-build@cgr.dev" \
+          		$flags \
+          		${depthflag:+"$depthflag"} "$repo" "$workdir"
+
+          	vr cd "$workdir"
+          	msg "tar -c . | tar -C \"$dest_fullpath\" -x"
+          	(
+          		tar -c .
+          		echo $? >"$rcfile"
+          	) | tar -C "$dest_fullpath" -x --no-same-owner
+          	read rc <"$rcfile" || fail "failed to read rc file"
+          	[ $rc -eq 0 ] || fail "tar creation in $workdir failed"
+
+          	rm -rf "$workdir"
+          	vr cd "$dest_fullpath"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	local foundcommit="" tagobj=""
+          	if [ -z "$tag" ]; then
+          		foundcommit=$(git rev-parse --verify HEAD)
+          		if [ -n "$expcommit" ] && [ "$expcommit" != "$foundcommit" ]; then
+          			if [ "$depth" = "-1" ]; then
+          				msg "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, performing reset"
+          				vr git reset --hard "$expcommit"
+          			else
+          				fail "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, set depth to -1 to attempt a reset"
+          			fi
+          		fi
+          		msg "tip of ${branch:-HEAD} is commit $foundcommit"
+          		process_cherry_picks "$cherry_pick" || fail "failed to apply cherry-pick"
+          		return 0
+          	fi
+
+          	vr git fetch $quiet $remote ${depthflag:-"$depthflag"} --no-tags \
+          		"+refs/tags/$tag:refs/$remote/tags/$tag"
+          	vr git checkout $quiet "$remote/tags/$tag"
+
+          	foundcommit=$(git rev-parse --verify HEAD)
+          	if [ -z "$expcommit" ] || [ "$expcommit" = "$foundcommit" ]; then
+          		msg "tag $tag is $foundcommit"
+          	else
+
+          		tagobj=$(git rev-parse --verify --end-of-options \
+          			"refs/$remote/tags/$tag")
+          		if [ "$expcommit" != "$tagobj" ]; then
+          			[ "$tagobj" != "$expcommit" ] &&
+          				msg "tag object hash was $tagobj"
+          			fail "Expected commit $expcommit for $tag, found $foundcommit"
+          		fi
+
+          		msg "Warning: The provided expected-commit ($expcommit)"
+          		msg "was the hash of the annotated tag object for $tag."
+          		msg "Update to set expected-commit to $foundcommit"
+          	fi
+
+          	process_cherry_picks "$cherry_pick" ||
+          		fail "failed to apply cherry-pick"
+
+          	return 0
+          }
+          cpickf=$(mktemp) || {
+          	echo "failed mktemp"
+          	exit 1
+          }
+          cat >"$cpickf" <<"END_CHERRY_PICKS"
+
+          END_CHERRY_PICKS
+          main \
+          	"https://github.com/nodejs/node.git" "." \
+          	"unset" "" \
+          	"v24.8.0" "f9ec1b63e17f24a38b7835bb703c7e2bebe0674d" \
+          	"false" "$cpickf"
+          rm -f "$cpickf"
+  - name: Configure and build
+    runs: |
+      case "x86_64" in
+      "aarch64")
+      	common_flags="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+      	;;
+      "x86_64")
+      	common_flags="-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+      	;;
+      esac
+      export CFLAGS="${CFLAGS/-Os/-O2} $common_flags"
+      export CXXFLAGS="${CXXFLAGS/-Os/-O2} $common_flags"
+      export CPPFLAGS="${CPPFLAGS/-Os/-O2} $common_flags"
+      python3.13 configure.py --prefix=/usr \
+      	--shared-brotli \
+      	--shared-zlib \
+      	--shared-openssl \
+      	--shared-cares \
+      	--shared-nghttp2 \
+      	--shared-libuv \
+      	--ninja \
+      	--openssl-use-def-ca-store \
+      	--with-icu-default-data-dir=$(icu-config --icudatadir) \
+      	--with-intl=system-icu \
+      	--openssl-conf-name=openssl_conf \
+      	--without-corepack
+      make BUILDTYPE=Release -j$(nproc)
+  - uses: autoconf/make-install
+    pipeline:
+      - runs: |
+          make -C "." install DESTDIR="/home/build/melange-out/nodejs-24" V=1
+      - runs: |
+          find /home/build/melange-out/nodejs-24 -name '*.la' -print -exec rm \{} \;
+  - runs: |
+      make DESTDIR="$/home/build/melange-out/nodejs-24" install
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/nodejs-24
+  - runs: |
+      rm -rf "/home/build/melange-out/nodejs-24"/usr/lib/node_modules
+      rm "/home/build/melange-out/nodejs-24"/usr/bin/npm
+      rm "/home/build/melange-out/nodejs-24"/usr/bin/npx
+subpackages:
+  - name: nodejs-24-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/nodejs-24"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" = "/home/build/melange-out/nodejs-24-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              for mandir in \
+              	"$PACKAGE_DIR/usr/share/man" \
+              	"$PACKAGE_DIR/usr/local/share/man" \
+              	"$PACKAGE_DIR/usr/man"; do
+
+              	if [ -d "$mandir" ]; then
+              		mkdir -p "/home/build/melange-out/nodejs-24-doc/usr/share/man"
+              		mv "$mandir"/* "/home/build/melange-out/nodejs-24-doc/usr/share/man/"
+              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
+              	fi
+              done
+    description: nodejs-24 documentation
+    commit: 21336ef289a6dcd26f191c941a010ad045fd7af9
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - grep
+            - man-db
+            - nodejs-24-doc
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/nodejs-24-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  github:
+    identifier: nodejs/node
+    strip-prefix: v
+    tag-filter: v24.
+    use-tag: true
+vars:
+  py-version: "3.13"
+test:
+  environment:
+    contents:
+      packages:
+        - nodejs-24
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - name: Verify Node.js Installation
+      runs: |
+        node --version || exit 1
+        node --help
+    - name: Execute Basic JavaScript
+      runs: |
+        cat <<'EOF' >test.js
+        console.log('Hello, World!');
+        EOF
+        node test.js | grep 'Hello, World!' || exit 1
+    - name: Test International Number Formatting
+      runs: |
+        cat <<'EOF' >testIntl.js
+        console.log(new Intl.NumberFormat('en-EN').format(1234.56));
+        console.log(new Intl.NumberFormat('de-DE').format(1234.56));
+        EOF
+        node testIntl.js | grep '1,234.56' && node testIntl.js | grep '1.234,56' || exit 1

@@ -1,0 +1,52 @@
+======================================
+Package: py3-setuptools-wheel
+Version 1: 80.9.0-r0 (python:3.11.12)
+Version 2: 80.9.0-r2 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/py3-setuptools-wheel-80.9.0-r0.melange.yaml	2025-05-26 19:15:24
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/py3-setuptools-wheel-80.9.0-r2.melange.yaml	2025-07-17 09:42:56
+@@ -1,9 +1,9 @@
+ package:
+   name: py3-setuptools-wheel
+   version: 80.9.0
+-  epoch: 0
++  epoch: 2
+   description: python3 setuptools wheel from pypi
+-  commit: c11d054772f55a19d6ced4e23d5dc9c543fee264
++  commit: 779eb8058e6989fbc5674eed7221fb741de7a381
+   copyright:
+     - license: MIT
+   resources: {}
+@@ -15,18 +15,18 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - busybox=1.37.0-r40
+-      - ca-certificates-bundle=20241121-r41
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - ld-linux=2.41-r4
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r1
+-      - libgcc=14.2.0-r12
+-      - libssl3=3.5.0-r1
+-      - libxcrypt=4.4.38-r1
+-      - wget=1.25.0-r1
+-      - wolfi-baselayout=20230201-r20
++      - busybox=1.37.0-r46
++      - ca-certificates-bundle=20250619-r1
++      - glibc-locale-posix=2.41-r53
++      - glibc=2.41-r53
++      - ld-linux=2.41-r53
++      - libcrypt1=2.41-r53
++      - libcrypto3=3.5.1-r0
++      - libgcc=15.1.0-r1
++      - libssl3=3.5.1-r0
++      - libxcrypt=4.4.38-r2
++      - wget=1.25.0-r2
++      - wolfi-baselayout=20230201-r22
+   accounts:
+     run-as: ""
+     users:

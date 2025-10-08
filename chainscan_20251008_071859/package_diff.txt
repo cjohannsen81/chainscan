@@ -1,0 +1,16 @@
+5c5
+< dumb-init 1.2.5-r8
+---
+> dumb-init 1.2.5-r9
+14c14
+< libcrypto3 3.5.2-r1
+---
+> libcrypto3 3.5.4-r0
+19c19
+< libssl3 3.5.2-r1
+---
+> libssl3 3.5.4-r0
+24c24
+< nodejs-24 24.8.0-r0
+---
+> nodejs-24 24.9.0-r0

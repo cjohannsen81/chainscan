@@ -1,0 +1,476 @@
+======================================
+Package: python-3.11
+Version 1: 3.11.12-r2 (python:3.11.12)
+Version 2: 3.11.13-r5 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/python-3.11-3.11.12-r2.melange.yaml	2025-06-03 01:37:02
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/python-3.11-3.11.13-r5.melange.yaml	2025-09-03 03:51:14
+@@ -1,14 +1,14 @@
+ package:
+   name: python-3.11
+-  version: 3.11.12
+-  epoch: 2
++  version: 3.11.13
++  epoch: 5
+   description: the Python programming language
+-  commit: 7efbdef363436a1cbbc36344a46b5e91a2bb8431
++  commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+   copyright:
+     - license: PSF-2.0
+   dependencies:
+     runtime:
+-      - python-3.11-base=3.11.12-r2
++      - python-3.11-base=3.11.13-r5
+     provides:
+       - python3=3.11.999
+       - python-3=3.11.999
+@@ -21,84 +21,84 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - binutils=2.44-r4
++      - binutils=2.45-r1
+       - build-base=1-r8
+-      - busybox=1.37.0-r41
+-      - bzip2-dev=1.0.8-r12
+-      - ca-certificates-bundle=20241121-r42
+-      - cyrus-sasl=2.1.28-r42
+-      - expat-dev=2.7.1-r1
+-      - gcc=15.1.0-r1
+-      - gdbm-dev=1.25-r1
+-      - gdbm=1.25-r1
+-      - git=2.49.0-r2
+-      - glibc-dev=2.41-r4
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - gmp=6.3.0-r6
+-      - heimdal-libs=7.8.0-r41
+-      - isl=0.27-r1
+-      - jitterentropy-library-dev=3.6.3-r1
+-      - jitterentropy-library=3.6.3-r1
+-      - keyutils-libs=1.6.3-r32
+-      - krb5-conf=1.0-r6
+-      - krb5-libs=1.21.3-r42
+-      - ld-linux=2.41-r4
+-      - libatomic=15.1.0-r1
+-      - libbrotlicommon1=1.1.0-r5
+-      - libbrotlidec1=1.1.0-r5
+-      - libbz2-1=1.0.8-r12
+-      - libcom_err=1.47.2-r22
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r2
+-      - libcurl-openssl4=8.14.0-r2
+-      - libexpat1=2.7.1-r1
+-      - libffi-dev=3.4.8-r1
+-      - libffi=3.4.8-r1
+-      - libgcc=15.1.0-r1
+-      - libgo=15.1.0-r1
+-      - libgomp=15.1.0-r1
+-      - libidn2=2.3.8-r1
+-      - libldap=2.6.10-r2
+-      - libnghttp2-14=1.65.0-r1
+-      - libpcre2-8-0=10.45-r2
+-      - libpsl=0.21.5-r5
+-      - libquadmath=15.1.0-r1
+-      - libssl3=3.5.0-r2
+-      - libstdc++-dev=15.1.0-r1
+-      - libstdc++=15.1.0-r1
+-      - libunistring=1.3-r2
+-      - libverto=0.3.2-r5
+-      - libxcrypt-dev=4.4.38-r2
+-      - libxcrypt=4.4.38-r2
+-      - libzstd1=1.5.7-r2
+-      - linux-headers=6.15-r1
+-      - make=4.4.1-r5
+-      - mpc=1.3.1-r6
+-      - mpdecimal-dev=4.0.1-r1
+-      - mpdecimal=4.0.1-r1
+-      - mpfr=4.2.2-r1
+-      - ncurses-dev=6.5_p20241228-r2
+-      - ncurses-terminfo-base=6.5_p20241228-r2
+-      - ncurses=6.5_p20241228-r2
+-      - nss-db=2.41-r4
+-      - nss-hesiod=2.41-r4
+-      - openssf-compiler-options=20240627-r20
+-      - openssl-dev=3.5.0-r2
+-      - patch=2.8-r0
+-      - pkgconf=2.4.3-r2
+-      - posix-cc-wrappers=1-r6
+-      - readline-dev=8.2.13-r4
+-      - readline=8.2.13-r4
+-      - scanelf=1.3.8-r4
+-      - sqlite-dev=3.50.0-r0
+-      - sqlite-libs=3.50.0-r0
+-      - sqlite=3.50.0-r0
+-      - wolfi-baselayout=20230201-r20
+-      - xz-dev=5.8.1-r1
+-      - xz=5.8.1-r1
+-      - zlib-dev=1.3.1-r7
+-      - zlib=1.3.1-r7
++      - busybox=1.37.0-r50
++      - bzip2-dev=1.0.8-r21
++      - ca-certificates-bundle=20250619-r5
++      - cyrus-sasl=2.1.28-r44
++      - expat-dev=2.7.1-r3
++      - gcc=15.2.0-r1
++      - gdbm-dev=1.26-r1
++      - gdbm=1.26-r1
++      - git=2.51.0-r0
++      - glibc-dev=2.42-r0
++      - glibc-locale-posix=2.42-r0
++      - glibc=2.42-r0
++      - gmp=6.3.0-r8
++      - heimdal-libs=7.8.0-r42
++      - isl=0.27-r4
++      - jitterentropy-library-dev=3.6.3-r2
++      - jitterentropy-library=3.6.3-r2
++      - keyutils-libs=1.6.3-r37
++      - krb5-conf=1.0-r7
++      - krb5-libs=1.22.1-r1
++      - ld-linux=2.42-r0
++      - libatomic=15.2.0-r1
++      - libbrotlicommon1=1.1.0-r7
++      - libbrotlidec1=1.1.0-r7
++      - libbz2-1=1.0.8-r21
++      - libcom_err=1.47.3-r1
++      - libcrypt1=2.42-r0
++      - libcrypto3=3.5.2-r1
++      - libcurl-openssl4=8.15.0-r5
++      - libexpat1=2.7.1-r3
++      - libffi-dev=3.5.2-r1
++      - libffi=3.5.2-r1
++      - libgcc=15.2.0-r1
++      - libgo=15.2.0-r1
++      - libgomp=15.2.0-r1
++      - libidn2=2.3.8-r3
++      - libldap=2.6.10-r5
++      - libnghttp2-14=1.67.0-r0
++      - libpcre2-8-0=10.46-r0
++      - libpsl=0.21.5-r6
++      - libquadmath=15.2.0-r1
++      - libssl3=3.5.2-r1
++      - libstdc++-dev=15.2.0-r1
++      - libstdc++=15.2.0-r1
++      - libunistring=1.3-r4
++      - libverto=0.3.2-r6
++      - libxcrypt-dev=4.4.38-r4
++      - libxcrypt=4.4.38-r4
++      - libzstd1=1.5.7-r3
++      - linux-headers=6.16.4-r0
++      - make=4.4.1-r8
++      - mpc=1.3.1-r7
++      - mpdecimal-dev=4.0.1-r3
++      - mpdecimal=4.0.1-r3
++      - mpfr=4.2.2-r2
++      - ncurses-dev=6.5_p20250621-r1
++      - ncurses-terminfo-base=6.5_p20250621-r1
++      - ncurses=6.5_p20250621-r1
++      - nss-db=2.42-r0
++      - nss-hesiod=2.42-r0
++      - openssf-compiler-options=20240627-r27
++      - openssl-dev=3.5.2-r1
++      - patch=2.8-r3
++      - pkgconf=2.5.1-r1
++      - posix-cc-wrappers=1-r7
++      - readline-dev=8.3-r1
++      - readline=8.3-r1
++      - scanelf=1.3.8-r5
++      - sqlite-dev=3.50.4-r1
++      - sqlite-libs=3.50.4-r1
++      - sqlite=3.50.4-r1
++      - wolfi-baselayout=20230201-r23
++      - xz-dev=5.8.1-r2
++      - xz=5.8.1-r2
++      - zlib-dev=1.3.1-r51
++      - zlib=1.3.1-r51
+   accounts:
+     run-as: ""
+     users:
+@@ -124,9 +124,11 @@
+ pipeline:
+   - uses: git-checkout
+     with:
+-      expected-commit: da1f6c61ddfec776a4a2baff75eefad99ee5d84b
++      cherry-picks: |
++        3.11/b4ec17488eedec36d3c05fec127df71c0071f6cb: Remediate CVE-2025-8194
++      expected-commit: 498b971ea3673012a1d4b21860b229d55fc6e575
+       repository: https://github.com/python/cpython.git
+-      tag: v3.11.12
++      tag: v3.11.13
+     pipeline:
+       - runs: |
+           #!/bin/sh
+@@ -329,12 +331,13 @@
+           	exit 1
+           }
+           cat >"$cpickf" <<"END_CHERRY_PICKS"
++          3.11/b4ec17488eedec36d3c05fec127df71c0071f6cb: Remediate CVE-2025-8194
+ 
+           END_CHERRY_PICKS
+           main \
+           	"https://github.com/python/cpython.git" "." \
+           	"unset" "" \
+-          	"v3.11.12" "da1f6c61ddfec776a4a2baff75eefad99ee5d84b" \
++          	"v3.11.13" "498b971ea3673012a1d4b21860b229d55fc6e575" \
+           	"false" "$cpickf"
+           rm -f "$cpickf"
+   - name: Force use of system libraries
+@@ -344,14 +347,14 @@
+       	Modules/_ctypes/libffi*
+   - uses: patch
+     with:
+-      patches: gh-118224.patch gh-127301.patch gh-134341.patch
++      patches: gh-118224.patch gh-127301.patch gh-135462.patch
+     pipeline:
+       - runs: |
+           series=''
+           if [ -z $series ]; then
+-          	if [ -n 'gh-118224.patch gh-127301.patch gh-134341.patch' ]; then
++          	if [ -n 'gh-118224.patch gh-127301.patch gh-135462.patch' ]; then
+           		series=$(mktemp)
+-          		echo 'gh-118224.patch gh-127301.patch gh-134341.patch' | awk '{ for(i = 1; i <= NF; i++) { print $i; } }' >$series
++          		echo 'gh-118224.patch gh-127301.patch gh-135462.patch' | awk '{ for(i = 1; i <= NF; i++) { print $i; } }' >$series
+           	else
+           		echo "ERROR: Neither patches or series was set."
+           		exit 1
+@@ -369,16 +372,15 @@
+       	--prefix=/usr \
+       	--enable-ipv6 \
+       	--enable-loadable-sqlite-extensions \
+-      	--enable-optimizations \
++      	$([ -d /usr/lib/oldglibc ] || echo --enable-optimizations) \
+       	--enable-shared \
+-      	--without-lto \
++      	--with-lto \
+       	--with-computed-gotos \
+       	--with-dbmliborder=gdbm:ndbm \
+       	--with-system-expat \
+       	--with-system-libmpdec \
+       	--without-ensurepip \
+       	--with-builtin-hashlib-hashes=blake2 \
+-      	--with-lto \
+       	--with-wheel-pkg-dir=/usr/share/python-wheels
+   - uses: autoconf/make
+     pipeline:
+@@ -445,7 +447,7 @@
+         - py3-setuptools-wheel
+         - py3-pip-wheel
+     description: python-3.11 without /usr/bin/python3
+-    commit: 7efbdef363436a1cbbc36344a46b5e91a2bb8431
++    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+     test:
+       environment:
+         contents:
+@@ -472,11 +474,12 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="python-3.11-base" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+         - runs: |
+-            python3.11 version-check.py 3.11.12
++            python3.11 version-check.py 3.11.13
+         - name: Verify venv installs expected packages
+           runs: |
+             set +x
+@@ -501,7 +504,7 @@
+             	tmp=${wheel##*/}
+             	tmp=${tmp#*-}
+             	ver=${tmp%%-*}
+-            	if ! grep -q "$pkg[ ]\+${ver}$" "$d/list.txt"; then
++            	if ! grep -q "${pkg}[ ]\+${ver}$" "$d/list.txt"; then
+             		echo "FAIL: did not find '$pkg==$ver' in venv"
+             		echo "pip list had:"
+             		sed 's,^,>,' "$d/list.txt"
+@@ -519,15 +522,22 @@
+               if [ -n "" ]; then
+               	PACKAGE_DIR="/home/build/melange-out/"
+               fi
+-              if [ "$PACKAGE_DIR" == "/home/build/melange-out/python-3.11-doc" ]; then
++              if [ "$PACKAGE_DIR" = "/home/build/melange-out/python-3.11-doc" ]; then
+               	echo "ERROR: Package can not split files from itself!" && exit 1
+-              fi
+-              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+-              	mkdir -p "/home/build/melange-out/python-3.11-doc/usr/share"
+-              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/python-3.11-doc/usr/share"
+               fi
++              for mandir in \
++              	"$PACKAGE_DIR/usr/share/man" \
++              	"$PACKAGE_DIR/usr/local/share/man" \
++              	"$PACKAGE_DIR/usr/man"; do
++
++              	if [ -d "$mandir" ]; then
++              		mkdir -p "/home/build/melange-out/python-3.11-doc/usr/share/man"
++              		mv "$mandir"/* "/home/build/melange-out/python-3.11-doc/usr/share/man/"
++              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
++              	fi
++              done
+     description: python3 documentation
+-    commit: 7efbdef363436a1cbbc36344a46b5e91a2bb8431
++    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+     test:
+       environment:
+         contents:
+@@ -568,7 +578,7 @@
+                 fi
+                 cd /
+                 doc_files=false
+-                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
++                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                 	if [ -f /"$doc_file" ]; then
+ 
+                 		man -l /"$doc_file" >/dev/null
+@@ -610,13 +620,120 @@
+           	"/home/build/melange-out/python-3.11-dev/$d/"
+     dependencies:
+       runtime:
+-        - python-3.11=3.11.12-r2
+-        - python-3.11-base-dev=3.11.12-r2
+-      provides:
+-        - python3-dev=3.11.12-r2
+-        - python-3-dev=3.11.12-r2
++        - python-3.11=3.11.13-r5
++        - python-3.11-base-dev=3.11.13-r5
++      provides:
++        - python3-dev=3.11.13-r5
++        - python-3-dev=3.11.13-r5
+     description: python3 development headers
+-    commit: 7efbdef363436a1cbbc36344a46b5e91a2bb8431
++    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
++    test:
++      environment:
++        contents:
++          packages:
++            - python-3.11-dev
++        accounts:
++          run-as: ""
++          users:
++            - username: build
++              uid: 1000
++              gid: 1000
++              shell: ""
++              homedir: ""
++          groups:
++            - groupname: build
++              gid: 1000
++              members:
++                - build
++      pipeline:
++        - uses: test/virtualpackage
++          with:
++            real-pkg-name: python-3.11-dev
++            virtual-pkg-name: python3-dev
++          pipeline:
++            - name: virtual package installation checks
++              runs: |
++                get_installed_version() {
++                	pkg="$1"
++                	apk list installed "${pkg}" 2>/dev/null | awk '{print $1}'
++                }
++                virtual_pkg_name_and_version="python3-dev-3.11.13-r5"
++                maybe_installed_pkg_name_and_version="$(get_installed_version python3-dev)"
++                if [ "${virtual_pkg_name_and_version}" == "${maybe_installed_pkg_name_and_version}" ]; then
++                	echo "FAIL: ${virtual_pkg_name_and_version} is installed." >&2
++                	exit 1
++                fi
++                echo "PASS: ${virtual_pkg_name_and_version} is not installed."
++                if [ "python-3.11-dev" != "" ]; then
++                	maybe_real_pkg_installed_name_and_version="$(get_installed_version python-3.11-dev)"
++                	if [ "${maybe_real_pkg_installed_name_and_version}" != "" ]; then
++                		echo "PASS: ${maybe_real_pkg_installed_name_and_version} is installed."
++                		exit 0
++                	else
++                		echo "FAIL: No real package python-3.11-dev installed for virtual package python3-dev." >&2
++                		exit 1
++                	fi
++                fi
++            - name: virtual package configuration checks
++              runs: |
++                virtual_pkg="python3-dev"
++                real_pkg="python-3.11-dev"
++                if [ "$real_pkg" = "" ]; then
++                	echo "SKIP: no 'real-pkg-name' was set, so skipping evaluation."
++                	exit 0
++                fi
++                declared_provides=$(apk info --installed --provides --quiet "$real_pkg" | grep -v '^$')
++                if echo "$declared_provides" | awk -F'=' '{print $1}' | grep -qx "${virtual_pkg}"; then
++                	echo "PASS: real package [$real_pkg] correctly declares virtual package [$virtual_pkg]."
++                	exit 0
++                else
++                	echo "FAIL: real package [$real_pkg] does not declare virtual package [$virtual_pkg] in 'provides'." >&2
++                	exit 1
++                fi
++        - uses: test/virtualpackage
++          with:
++            real-pkg-name: python-3.11-dev
++            virtual-pkg-name: python-3-dev
++          pipeline:
++            - name: virtual package installation checks
++              runs: |
++                get_installed_version() {
++                	pkg="$1"
++                	apk list installed "${pkg}" 2>/dev/null | awk '{print $1}'
++                }
++                virtual_pkg_name_and_version="python-3-dev-3.11.13-r5"
++                maybe_installed_pkg_name_and_version="$(get_installed_version python-3-dev)"
++                if [ "${virtual_pkg_name_and_version}" == "${maybe_installed_pkg_name_and_version}" ]; then
++                	echo "FAIL: ${virtual_pkg_name_and_version} is installed." >&2
++                	exit 1
++                fi
++                echo "PASS: ${virtual_pkg_name_and_version} is not installed."
++                if [ "python-3.11-dev" != "" ]; then
++                	maybe_real_pkg_installed_name_and_version="$(get_installed_version python-3.11-dev)"
++                	if [ "${maybe_real_pkg_installed_name_and_version}" != "" ]; then
++                		echo "PASS: ${maybe_real_pkg_installed_name_and_version} is installed."
++                		exit 0
++                	else
++                		echo "FAIL: No real package python-3.11-dev installed for virtual package python-3-dev." >&2
++                		exit 1
++                	fi
++                fi
++            - name: virtual package configuration checks
++              runs: |
++                virtual_pkg="python-3-dev"
++                real_pkg="python-3.11-dev"
++                if [ "$real_pkg" = "" ]; then
++                	echo "SKIP: no 'real-pkg-name' was set, so skipping evaluation."
++                	exit 0
++                fi
++                declared_provides=$(apk info --installed --provides --quiet "$real_pkg" | grep -v '^$')
++                if echo "$declared_provides" | awk -F'=' '{print $1}' | grep -qx "${virtual_pkg}"; then
++                	echo "PASS: real package [$real_pkg] correctly declares virtual package [$virtual_pkg]."
++                	exit 0
++                else
++                	echo "FAIL: real package [$real_pkg] does not declare virtual package [$virtual_pkg] in 'provides'." >&2
++                	exit 1
++                fi
+   - name: python-3.11-base-dev
+     pipeline:
+       - runs: |
+@@ -664,9 +781,9 @@
+               done
+     dependencies:
+       runtime:
+-        - python-3.11-base=3.11.12-r2
++        - python-3.11-base=3.11.13-r5
+     description: python3 development headers
+-    commit: 7efbdef363436a1cbbc36344a46b5e91a2bb8431
++    commit: ba1ebc945eae51fb24872bf64fd830c3a4c653b1
+ update:
+   enabled: true
+   manual: false
+@@ -706,8 +823,8 @@
+             - build
+   pipeline:
+     - runs: |
+-        python version-check.py 3.11.12
+-        python3 version-check.py 3.11.12
++        python version-check.py 3.11.13
++        python3 version-check.py 3.11.13
+         pydoc3 --version
+         pydoc3 --help
+         python --version

@@ -1,0 +1,292 @@
+======================================
+Package: sqlite-libs
+Version 1: 3.50.0-r0 (python:3.11.12)
+Version 2: 3.50.4-r1 (python:3.11.13)
+======================================
+
+=== Raw YAML Diff ===
+--- ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.12/sqlite-libs-3.50.0-r0.melange.yaml	2025-05-29 09:22:31
++++ ./chainscan_20251008_071520/downloaded_apks/cgr.dev_chainguard-private_python_3.11.13/sqlite-libs-3.50.4-r1.melange.yaml	2025-08-20 12:00:59
+@@ -1,9 +1,9 @@
+ package:
+   name: sqlite
+-  version: 3.50.0
+-  epoch: 0
++  version: 3.50.4
++  epoch: 1
+   description: C library which implements an SQL database engine
+-  commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
++  commit: 91627cd60c5b9bf639f4a453d82f5eec39793a99
+   copyright:
+     - license: blessing
+   resources: {}
+@@ -15,48 +15,53 @@
+     keyring:
+       - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+     packages:
+-      - binutils=2.44-r3
++      - binutils=2.45-r0
+       - build-base=1-r8
+-      - busybox=1.37.0-r41
+-      - ca-certificates-bundle=20241121-r42
+-      - gcc=14.2.0-r13
+-      - glibc-dev=2.41-r4
+-      - glibc-locale-posix=2.41-r4
+-      - glibc=2.41-r4
+-      - gmp=6.3.0-r5
+-      - isl=0.27-r1
+-      - ld-linux=2.41-r4
+-      - libatomic=14.2.0-r13
+-      - libcrypt1=2.41-r4
+-      - libcrypto3=3.5.0-r2
+-      - libgcc=14.2.0-r13
+-      - libgo=14.2.0-r13
+-      - libgomp=14.2.0-r13
+-      - libquadmath=14.2.0-r13
+-      - libssl3=3.5.0-r2
+-      - libstdc++-dev=14.2.0-r13
+-      - libstdc++=14.2.0-r13
+-      - libxcrypt-dev=4.4.38-r2
+-      - libxcrypt=4.4.38-r2
+-      - libzstd1=1.5.7-r2
+-      - linux-headers=6.15-r1
+-      - make=4.4.1-r5
+-      - mpc=1.3.1-r6
+-      - mpfr=4.2.2-r1
++      - busybox=1.37.0-r48
++      - ca-certificates-bundle=20250619-r5
++      - gcc=15.2.0-r0
++      - glibc-dev=2.41-r56
++      - glibc-locale-posix=2.41-r56
++      - glibc=2.41-r56
++      - gmp=6.3.0-r8
++      - isl=0.27-r4
++      - ld-linux=2.41-r56
++      - libatomic=15.2.0-r0
++      - libcrypt1=2.41-r56
++      - libcrypto3=3.5.2-r1
++      - libgcc=15.2.0-r0
++      - libgo=15.2.0-r0
++      - libgomp=15.2.0-r0
++      - libquadmath=15.2.0-r0
++      - libssl3=3.5.2-r1
++      - libstdc++-dev=15.2.0-r0
++      - libstdc++=15.2.0-r0
++      - libxcrypt-dev=4.4.38-r4
++      - libxcrypt=4.4.38-r4
++      - libzstd1=1.5.7-r3
++      - linux-headers=6.16.1-r0
++      - make=4.4.1-r8
++      - mpc=1.3.1-r7
++      - mpfr=4.2.2-r2
+       - ncurses-dev=6.5_p20240629-r0
+-      - ncurses-terminfo-base=6.5_p20241228-r2
+-      - ncurses=6.5_p20241228-r2
+-      - nss-db=2.41-r4
+-      - nss-hesiod=2.41-r4
+-      - openssf-compiler-options=20240627-r20
+-      - pkgconf=2.4.3-r2
+-      - posix-cc-wrappers=1-r6
+-      - readline-dev=8.2.13-r4
+-      - readline=8.2.13-r4
+-      - scanelf=1.3.8-r4
+-      - wget=1.25.0-r1
+-      - wolfi-baselayout=20230201-r20
+-      - zlib=1.3.1-r7
++      - ncurses-terminfo-base=6.5_p20250621-r1
++      - ncurses=6.5_p20250621-r1
++      - nss-db=2.41-r56
++      - nss-hesiod=2.41-r56
++      - openssf-compiler-options=20240627-r26
++      - pkgconf=2.5.1-r1
++      - posix-cc-wrappers=1-r7
++      - readline-dev=8.3-r1
++      - readline=8.3-r1
++      - scanelf=1.3.8-r5
++      - sqlite-libs=3.50.4-r0
++      - tcl-dev=9.0.2-r1
++      - tcl=9.0.2-r1
++      - tzdata=2025b-r2
++      - wget=1.25.0-r4
++      - wolfi-baselayout=20230201-r23
++      - zlib-dev=1.3.1-r51
++      - zlib=1.3.1-r51
+   accounts:
+     run-as: ""
+     users:
+@@ -82,19 +87,20 @@
+ pipeline:
+   - uses: fetch
+     with:
+-      expected-sha256: 3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327
++      expected-sha256: b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9
++      extract: "false"
+       purl-name: sqlite
+-      purl-version: 3.50.0
+-      uri: https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz
++      purl-version: 3.50.4
++      uri: https://www.sqlite.org/2025/sqlite-src-3500400.zip
+     pipeline:
+       - runs: |
+-          if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" == "" ] && [ "" == "" ]; then
++          if [ "b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9" == "" ] && [ "" == "" ]; then
+           	printf "One of expected-sha256 or expected-sha512 is required"
+           	exit 1
+           fi
+-          bn=$(basename https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz)
+-          if [ ! "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" == "" ]; then
+-          	fn="/var/cache/melange/sha256:3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327"
++          bn=$(basename https://www.sqlite.org/2025/sqlite-src-3500400.zip)
++          if [ ! "b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9" == "" ]; then
++          	fn="/var/cache/melange/sha256:b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9"
+           	if [ -f $fn ]; then
+           		printf "fetch: found $fn in cache\n"
+           		cp $fn $bn
+@@ -107,12 +113,12 @@
+           	fi
+           fi
+           if [ ! -f $bn ]; then
+-          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz'
++          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://www.sqlite.org/2025/sqlite-src-3500400.zip'
+           fi
+-          if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" != "" ]; then
+-          	printf "fetch: Expected sha256: 3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327\n"
++          if [ "b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9" != "" ]; then
++          	printf "fetch: Expected sha256: b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9\n"
+           	sum=$(sha256sum $bn | awk '{print $1}')
+-          	if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" != "$sum" ]; then
++          	if [ "b7b4dc060f36053902fb65b344bbbed592e64b2291a26ac06fe77eec097850e9" != "$sum" ]; then
+           		printf "fetch: Expected sha256 does not match found: $sum\n"
+           		exit 1
+           	fi
+@@ -124,12 +130,16 @@
+           		exit 1
+           	fi
+           fi
+-          if [ "true" = "true" ]; then
++          if [ "false" = "true" ]; then
+           	tar -x '--strip-components=1' -C '.' -f $bn
+           fi
+           if [ "false" = "true" ]; then
+           	rm $bn
+           fi
++  - name: Extract ZIP & move it to the normal place
++    runs: |
++      unzip sqlite-src-3500400.zip -d ../
++      mv ../sqlite-src-3500400/* .
+   - name: Configure
+     runs: |
+       _amalgamation="-DSQLITE_ENABLE_FTS4 \
+@@ -154,7 +164,8 @@
+       	--enable-static \
+       	--enable-load-extension \
+       	--enable-fts3
+-      make -j$(nproc) V=1
++      make "-j$(nproc)" V=1
++      make tclextension-install
+   - uses: autoconf/make-install
+     pipeline:
+       - runs: |
+@@ -217,7 +228,7 @@
+       runtime:
+         - sqlite
+     description: sqlite headers
+-    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
++    commit: 91627cd60c5b9bf639f4a453d82f5eec39793a99
+     test:
+       environment:
+         contents:
+@@ -278,6 +289,7 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="sqlite-dev" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+@@ -290,15 +302,22 @@
+               if [ -n "" ]; then
+               	PACKAGE_DIR="/home/build/melange-out/"
+               fi
+-              if [ "$PACKAGE_DIR" == "/home/build/melange-out/sqlite-doc" ]; then
++              if [ "$PACKAGE_DIR" = "/home/build/melange-out/sqlite-doc" ]; then
+               	echo "ERROR: Package can not split files from itself!" && exit 1
+               fi
+-              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+-              	mkdir -p "/home/build/melange-out/sqlite-doc/usr/share"
+-              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/sqlite-doc/usr/share"
+-              fi
++              for mandir in \
++              	"$PACKAGE_DIR/usr/share/man" \
++              	"$PACKAGE_DIR/usr/local/share/man" \
++              	"$PACKAGE_DIR/usr/man"; do
++
++              	if [ -d "$mandir" ]; then
++              		mkdir -p "/home/build/melange-out/sqlite-doc/usr/share/man"
++              		mv "$mandir"/* "/home/build/melange-out/sqlite-doc/usr/share/man/"
++              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
++              	fi
++              done
+     description: sqlite documentation
+-    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
++    commit: 91627cd60c5b9bf639f4a453d82f5eec39793a99
+     test:
+       environment:
+         contents:
+@@ -339,7 +358,7 @@
+                 fi
+                 cd /
+                 doc_files=false
+-                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
++                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                 	if [ -f /"$doc_file" ]; then
+ 
+                 		man -l /"$doc_file" >/dev/null
+@@ -374,7 +393,7 @@
+           mkdir -p "/home/build/melange-out/sqlite-libs"/usr
+           mv "/home/build/melange-out/sqlite"/usr/lib "/home/build/melange-out/sqlite-libs"/usr/
+     description: sqlite library
+-    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
++    commit: 91627cd60c5b9bf639f4a453d82f5eec39793a99
+     test:
+       environment:
+         contents:
+@@ -401,6 +420,7 @@
+               runs: |
+                 ldd-check \
+                 	--files="" \
++                	--exclude-files="" \
+                 	--packages="sqlite-libs" \
+                 	--extra-library-paths="" \
+                 	--verbose="false"
+@@ -420,6 +440,7 @@
+     contents:
+       packages:
+         - sqlite
++        - tcl
+     accounts:
+       run-as: ""
+       users:
+@@ -451,3 +472,22 @@
+         sqlite3 /tmp/test.db "SELECT * FROM test WHERE id > 50 LIMIT 5;"
+         sqlite3 /tmp/test.db ".schema"
+         sqlite3 /tmp/test.db "SELECT COUNT(*) FROM test;"
++    - name: Jamon's Test
++      runs: |
++        cat <<EOF | tclsh
++        puts [info tclversion]
++        package require sqlite3
++
++        # Open sqlite.db file
++        sqlite3 db sqlite.db
++
++        # Create users table
++        db eval {CREATE TABLE IF NOT EXISTS users (firstname TEXT, lastname TEXT);}
++
++        # Show schema
++        puts "Database schema:"
++        puts [db eval {SELECT sql FROM sqlite_master WHERE type='table';}]
++
++        # Close database
++        db close
++        EOF

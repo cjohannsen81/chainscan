@@ -1,0 +1,218 @@
+package:
+  name: py3-setuptools-wheel
+  version: 80.9.0
+  epoch: 0
+  description: python3 setuptools wheel from pypi
+  commit: c11d054772f55a19d6ced4e23d5dc9c543fee264
+  copyright:
+    - license: MIT
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox=1.37.0-r40
+      - ca-certificates-bundle=20241121-r41
+      - glibc-locale-posix=2.41-r4
+      - glibc=2.41-r4
+      - ld-linux=2.41-r4
+      - libcrypt1=2.41-r4
+      - libcrypto3=3.5.0-r1
+      - libgcc=14.2.0-r12
+      - libssl3=3.5.0-r1
+      - libxcrypt=4.4.38-r1
+      - wget=1.25.0-r1
+      - wolfi-baselayout=20230201-r20
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922
+      extract: "false"
+      purl-name: py3-setuptools-wheel
+      purl-version: 80.9.0
+      uri: https://files.pythonhosted.org/packages/py3/s/setuptools/setuptools-80.9.0-py3-none-any.whl
+    pipeline:
+      - runs: |
+          if [ "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922" == "" ] && [ "" == "" ]; then
+          	printf "One of expected-sha256 or expected-sha512 is required"
+          	exit 1
+          fi
+          bn=$(basename https://files.pythonhosted.org/packages/py3/s/setuptools/setuptools-80.9.0-py3-none-any.whl)
+          if [ ! "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922" == "" ]; then
+          	fn="/var/cache/melange/sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          else
+          	fn="/var/cache/melange/sha512:"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          fi
+          if [ ! -f $bn ]; then
+          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://files.pythonhosted.org/packages/py3/s/setuptools/setuptools-80.9.0-py3-none-any.whl'
+          fi
+          if [ "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922" != "" ]; then
+          	printf "fetch: Expected sha256: 062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922\n"
+          	sum=$(sha256sum $bn | awk '{print $1}')
+          	if [ "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922" != "$sum" ]; then
+          		printf "fetch: Expected sha256 does not match found: $sum\n"
+          		exit 1
+          	fi
+          else
+          	printf "fetch: Expected sha512: \n"
+          	sum=$(sha512sum $bn | awk '{print $1}')
+          	if [ "" != "$sum" ]; then
+          		printf "fetch: Expected sha512 does not match found: $sum\n"
+          		exit 1
+          	fi
+          fi
+          if [ "false" = "true" ]; then
+          	tar -x '--strip-components=1' -C '.' -f $bn
+          fi
+          if [ "false" = "true" ]; then
+          	rm $bn
+          fi
+  - name: Install wheel
+    runs: |
+      wdir="/home/build/melange-out/py3-setuptools-wheel/usr/share/python-wheels"
+      mkdir -p "$wdir"
+      cp -v *.whl "$wdir"
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 4021
+test:
+  environment:
+    contents:
+      packages:
+        - py3-pip
+        - py3-setuptools-wheel
+        - python3
+        - wolfi-base
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - name: Install provided wheel
+      runs: |
+        pip install /usr/share/python-wheels/setuptools-*.whl
+    - uses: python/import
+      with:
+        imports: import setuptools
+      pipeline:
+        - runs: |
+            set +x
+            PYTHON="DEFAULT"
+            SINGLE_IMPORT=""
+            MULTIPLE_IMPORTS="import setuptools"
+            FROM_PKG=""
+            perform_import() {
+            	command="$1"
+            	if $PYTHON -c "$command"; then
+            		echo "$PYTHON -c \"$command\": PASS"
+            	else
+            		echo "$PYTHON -c \"$command\": FAIL"
+            		return 1
+            	fi
+            }
+            if [ "$PYTHON" = "DEFAULT" ]; then
+            	glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+            	n=0
+            	for p in $glob; do
+            		[ -x "$p" ] && n=$((n + 1)) && py=$p
+            	done
+            	if [ "$n" -ne 1 ]; then
+            		echo "FAIL: must set inputs.python: " \
+            			"found $n executables matching $glob"
+            		[ "$n" -eq 0 ] || echo "found:" $glob
+            		exit 1
+            	fi
+            	echo "using python $py"
+            	PYTHON=$py
+            fi
+            if [ -n "$SINGLE_IMPORT" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+            	echo "Error: Cannot mix 'import' with 'imports'."
+            	exit 1
+            fi
+            if [ -n "$FROM_PKG" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+            	echo "Error: Cannot use 'from' with 'imports'."
+            	exit 1
+            fi
+            fail_flag=0
+            if [ -n "$MULTIPLE_IMPORTS" ]; then
+            	importf=$(mktemp) || {
+            		echo "failed mktemp"
+            		exit 1
+            	}
+            	printf "%s\n" "$MULTIPLE_IMPORTS" >"$importf" ||
+            		{
+            			echo "failed to write to temp file"
+            			exit 1
+            		}
+
+            	while read line; do
+
+            		line=${line%%#*}
+            		cmd=$(
+            			set -f
+            			echo $line
+            		)
+            		[ -z "$cmd" ] && continue
+            		perform_import "$cmd" || fail_flag=1
+            	done <"$importf"
+            	rm -f "$importf"
+            elif [ -n "$FROM_PKG" ]; then
+            	if [ -z "$SINGLE_IMPORT" ]; then
+            		echo "Error: 'from' specified without 'import'."
+            		exit 1
+            	fi
+            	command="from $FROM_PKG import $SINGLE_IMPORT"
+            	perform_import "$command" || fail_flag=1
+            elif [ -n "$SINGLE_IMPORT" ]; then
+            	perform_import "import $SINGLE_IMPORT" || fail_flag=1
+            else
+            	echo "No package specified for import."
+            	fail_flag=1
+            fi
+            exit $fail_flag

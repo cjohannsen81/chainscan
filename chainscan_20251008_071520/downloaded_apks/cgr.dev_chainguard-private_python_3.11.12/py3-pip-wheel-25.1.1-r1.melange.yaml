@@ -1,0 +1,1263 @@
+package:
+  name: py3-pip
+  version: 25.1.1
+  epoch: 1
+  description: The PyPA recommended tool for installing Python packages.
+  commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  copyright:
+    - license: MIT
+  dependencies:
+    provider-priority: "0"
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.44-r2
+      - build-base=1-r8
+      - busybox=1.37.0-r40
+      - ca-certificates-bundle=20241121-r41
+      - cyrus-sasl=2.1.28-r40
+      - gcc=14.2.0-r12
+      - gdbm=1.25-r0
+      - git=2.49.0-r1
+      - glibc-dev=2.41-r4
+      - glibc-locale-posix=2.41-r4
+      - glibc=2.41-r4
+      - gmp=6.3.0-r4
+      - heimdal-libs=7.8.0-r40
+      - isl=0.27-r0
+      - keyutils-libs=1.6.3-r31
+      - krb5-conf=1.0-r5
+      - krb5-libs=1.21.3-r40
+      - ld-linux=2.41-r4
+      - libatomic=14.2.0-r12
+      - libbrotlicommon1=1.1.0-r4
+      - libbrotlidec1=1.1.0-r4
+      - libbz2-1=1.0.8-r11
+      - libcom_err=1.47.2-r21
+      - libcrypt1=2.41-r4
+      - libcrypto3=3.5.0-r1
+      - libcurl-openssl4=8.14.0-r0
+      - libexpat1=2.7.1-r0
+      - libffi=3.4.8-r0
+      - libgcc=14.2.0-r12
+      - libgo=14.2.0-r12
+      - libgomp=14.2.0-r12
+      - libidn2=2.3.8-r0
+      - libldap=2.6.10-r0
+      - libnghttp2-14=1.65.0-r0
+      - libpcre2-8-0=10.45-r1
+      - libpsl=0.21.5-r4
+      - libquadmath=14.2.0-r12
+      - libssl3=3.5.0-r1
+      - libstdc++-dev=14.2.0-r12
+      - libstdc++=14.2.0-r12
+      - libunistring=1.3-r1
+      - libverto=0.3.2-r4
+      - libxcrypt-dev=4.4.38-r1
+      - libxcrypt=4.4.38-r1
+      - libzstd1=1.5.7-r1
+      - linux-headers=6.15-r0
+      - make=4.4.1-r4
+      - mpc=1.3.1-r5
+      - mpdecimal=4.0.1-r0
+      - mpfr=4.2.2-r0
+      - ncurses-terminfo-base=6.5_p20241228-r1
+      - ncurses=6.5_p20241228-r1
+      - nss-db=2.41-r4
+      - nss-hesiod=2.41-r4
+      - openssf-compiler-options=20240627-r19
+      - pip-zipapp=25.1.1-r0
+      - pkgconf=2.4.3-r1
+      - posix-cc-wrappers=1-r5
+      - py3-pip-wheel=25.1.1-r0
+      - py3-setuptools-wheel=80.9.0-r0
+      - py3-supported-python=1-r5
+      - python-3.10-base=3.10.17-r1
+      - python-3.11-base=3.11.12-r1
+      - python-3.12-base=3.12.10-r1
+      - python-3.13-base=3.13.3-r0
+      - readline=8.2.13-r3
+      - sqlite-libs=3.49.2-r0
+      - wolfi-baselayout=20230201-r20
+      - xz=5.8.1-r0
+      - zlib=1.3.1-r6
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: git-checkout
+    with:
+      expected-commit: 01857ef79f59a98db592bacb6e7b48f354528c80
+      repository: https://github.com/pypa/pip
+      tag: 25.1.1
+    pipeline:
+      - runs: |
+          #!/bin/sh
+          set -e
+          msg() { echo "[git checkout]" "$@"; }
+          fail() {
+          	msg FAIL "$@"
+          	exit 1
+          }
+          vr() {
+          	msg "execute:" "$@"
+          	"$@"
+          }
+          process_cherry_picks() {
+          	local cpicksf="$1" oifs="$IFS" count=0
+          	local fetched_branches=""
+          	local sdate=${SOURCE_DATE_EPOCH:-0}
+          	if [ "$sdate" -lt 315532800 ]; then
+          		msg "Setting commit date to Jan 1, 1980 (SOURCE_DATE_EPOCH found ${SOURCE_DATE_EPOCH})"
+          		sdate=315532800
+          	fi
+          	if [ -z "$cpicksf" ]; then
+          		return 0
+          	fi
+          	if [ ! -f "$cpicksf" ]; then
+          		msg "cherry picks input '$cpicksf' is not a file"
+          		return 1
+          	fi
+
+          	local line="" branch="" hash="" comment=""
+          	while IFS= read -r line; do
+
+          		line=${line%%#*}
+          		[ -z "$line" ] && continue
+
+          		if ! echo "$line" | grep -q ':'; then
+          			msg "Invalid format, expected '[branch/]commit: comment'. Found: $line"
+          			return 1
+          		fi
+
+          		branch=${line%%:*}
+          		comment=${line#*:}
+          		comment=$(
+          			set -f
+          			echo $comment
+          		)
+
+          		if [ -z "$comment" ]; then
+          			msg "Empty comment for cherry-pick: $line"
+          			return 1
+          		fi
+
+          		hash=${branch##*/}
+
+          		[ "$branch" != "$hash" ] && branch=${branch%/*} || branch=""
+
+          		if [ -n "$branch" ]; then
+          			case " $fetched_branches " in
+          			*" $branch "*) ;;
+          			*)
+          				vr git fetch origin $branch:$branch || {
+          					msg "failed to fetch branch $branch"
+          					return 1
+          				}
+          				fetched_branches="$fetched_branches $branch "
+          				;;
+          			esac
+          		fi
+
+          		vr env \
+          			GIT_COMMITTER_DATE="@$sdate" \
+          			git cherry-pick -x "$hash" || {
+          			msg "failed to cherry-pick $hash from branch $branch"
+          			return 1
+          		}
+
+          		msg "Cherry-picked $hash from $branch with comment: $comment"
+
+          		count=$((count + 1))
+          	done <"$cpicksf"
+
+          	if [ $count -gt 0 ]; then
+          		msg "applied $count cherry-pick(s). head is now $(git rev-parse HEAD)"
+          	fi
+          }
+          main() {
+          	local repo=$1 dest=${2:-.} depth=${3:-"unset"} branch=$4
+          	local tag=$5 expcommit=$6 recurse=${7:-false}
+          	local cherry_pick="$8"
+          	msg "repo='$repo' dest='$dest' depth='$depth' branch='$branch'" \
+          		"tag='$tag' expcommit='$expcommit' recurse='$recurse'"
+
+          	case "$recurse" in
+          	true | false) : ;;
+          	*) fail "recurse must be true or false, not '$recurse'" ;;
+          	esac
+
+          	[ -n "$repo" ] || fail "repository not provided"
+
+          	if [ -z "$branch" ] && [ -z "$tag" ]; then
+          		msg "Warning: you have not specified a branch or tag."
+          	elif [ -n "$branch" ] && [ -n "$tag" ]; then
+          		fail "both branch ($branch) and tag ($tag) are specified."
+          	fi
+
+          	[ -n "$expcommit" ] ||
+          		msg "Warning: no expected-commit"
+
+          	local flags="" depthflag="" dest_fullpath="" workdir=""
+          	local remote="origin" rcfile="" rc="" quiet="--quiet"
+          	flags="--config=advice.detachedHead=false"
+          	[ -n "$branch" ] && flags="$flags --branch=$branch"
+          	[ -n "$tag" ] && flags="$flags --branch=$tag"
+          	[ "$recurse" = "true" ] && flags="$flags --recurse-submodules"
+
+          	if [ "$depth" = "unset" ]; then
+          		depth=1
+          		if [ -n "$branch" -a -n "$expcommit" ]; then
+
+          			depth=-1
+          		fi
+          	fi
+
+          	[ "$depth" = "-1" ] || depthflag="--depth=$depth"
+
+          	workdir=$(mktemp -d)
+          	rcfile=$(mktemp)
+          	mkdir -p "$dest"
+          	dest_fullpath=$(realpath "$dest")
+
+          	vr git config --global --add safe.directory "$workdir"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	vr git clone $quiet "--origin=$remote" \
+          		"--config=user.name=Melange Build" \
+          		"--config=user.email=melange-build@cgr.dev" \
+          		$flags \
+          		${depthflag:+"$depthflag"} "$repo" "$workdir"
+
+          	vr cd "$workdir"
+          	msg "tar -c . | tar -C \"$dest_fullpath\" -x"
+          	(
+          		tar -c .
+          		echo $? >"$rcfile"
+          	) | tar -C "$dest_fullpath" -x --no-same-owner
+          	read rc <"$rcfile" || fail "failed to read rc file"
+          	[ $rc -eq 0 ] || fail "tar creation in $workdir failed"
+
+          	rm -rf "$workdir"
+          	vr cd "$dest_fullpath"
+          	vr git config --global --add safe.directory "$dest_fullpath"
+
+          	local foundcommit="" tagobj=""
+          	if [ -z "$tag" ]; then
+          		foundcommit=$(git rev-parse --verify HEAD)
+          		if [ -n "$expcommit" ] && [ "$expcommit" != "$foundcommit" ]; then
+          			if [ "$depth" = "-1" ]; then
+          				msg "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, performing reset"
+          				vr git reset --hard "$expcommit"
+          			else
+          				fail "expected commit $expcommit on ${branch:-HEAD}," \
+          					"got $foundcommit, set depth to -1 to attempt a reset"
+          			fi
+          		fi
+          		msg "tip of ${branch:-HEAD} is commit $foundcommit"
+          		process_cherry_picks "$cherry_pick" || fail "failed to apply cherry-pick"
+          		return 0
+          	fi
+
+          	vr git fetch $quiet $remote ${depthflag:-"$depthflag"} --no-tags \
+          		"+refs/tags/$tag:refs/$remote/tags/$tag"
+          	vr git checkout $quiet "$remote/tags/$tag"
+
+          	foundcommit=$(git rev-parse --verify HEAD)
+          	if [ -z "$expcommit" ] || [ "$expcommit" = "$foundcommit" ]; then
+          		msg "tag $tag is $foundcommit"
+          	else
+
+          		tagobj=$(git rev-parse --verify --end-of-options \
+          			"refs/$remote/tags/$tag")
+          		if [ "$expcommit" != "$tagobj" ]; then
+          			[ "$tagobj" != "$expcommit" ] &&
+          				msg "tag object hash was $tagobj"
+          			fail "Expected commit $expcommit for $tag, found $foundcommit"
+          		fi
+
+          		msg "Warning: The provided expected-commit ($expcommit)"
+          		msg "was the hash of the annotated tag object for $tag."
+          		msg "Update to set expected-commit to $foundcommit"
+          	fi
+
+          	process_cherry_picks "$cherry_pick" ||
+          		fail "failed to apply cherry-pick"
+
+          	return 0
+          }
+          cpickf=$(mktemp) || {
+          	echo "failed mktemp"
+          	exit 1
+          }
+          cat >"$cpickf" <<"END_CHERRY_PICKS"
+
+          END_CHERRY_PICKS
+          main \
+          	"https://github.com/pypa/pip" "." \
+          	"unset" "" \
+          	"25.1.1" "01857ef79f59a98db592bacb6e7b48f354528c80" \
+          	"false" "$cpickf"
+          rm -f "$cpickf"
+subpackages:
+  - name: py3.10-pip-base
+    pipeline:
+      - uses: py/pip-build-install-bootstrap
+        with:
+          dest: /home/build/melange-out/py3.10-pip-base
+          python: python3.10
+        pipeline:
+          - name: pip-bootstrap build
+            runs: |
+              export SOURCE_DATE_EPOCH=315532800
+              py=python3.10
+              pipzip=/usr/share/pip-zipapp/pip-zipapp.pyz
+              [ -e "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip does not exist"
+              	exit 1
+              }
+              [ -f "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip is not a file"
+              	exit 1
+              }
+              if [ "$py" = "DEFAULT" ]; then
+              	if p=$(command -v python3); then
+              		py=$p
+              		if [ -L "$p" ]; then
+              			py=$(readlink -f "$p") ||
+              				{
+              					echo "ERROR: failed 'readlink -f $p'" 1>&2
+              					exit 1
+              				}
+              		fi
+              	else
+              		glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+              		n=0
+              		for p in $glob; do
+              			[ -x "$p" ] && n=$((n + 1)) && py=$p && found="$found $p"
+              		done
+              		if [ "$n" -ne 1 ]; then
+              			echo "ERROR: must set inputs.python: " \
+              				"found $n executables matching $glob" 1>&2
+              			[ "$n" -eq 0 ] || echo "  found: $found" 1>&2
+              			exit 1
+              		fi
+              	fi
+              fi
+              pyver=$("$py" -c 'import sys; print("%s.%s" % (sys.version_info.major, sys.version_info.minor))')
+              sitepkgd=$("$py" -c 'import site; print(site.getsitepackages()[0])')
+              sitepkgd=${sitepkgd#/}
+              root=/home/build/melange-out/py3.10-pip-base
+              wd="./.wheels/$pyver"
+              info() { echo "$@" 1>&2; }
+              vr() {
+              	info "execute:" "$@"
+              	"$@"
+              }
+              tmpd=$(mktemp -d)
+              trap "rm -Rf '$tmpd'" EXIT
+              distwheelsd="/usr/share/pip-zipapp/wheels"
+              mkdir -p "$distwheelsd"
+              info "$py is $pyver with site_packages dir '$sitepkgd'"
+              if [ "true" = "false" ]; then
+              	info "skipping bdist-wheel"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose --no-deps \
+              		"--find-links=$distwheelsd" --no-index \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" .
+              else
+              	vr "$py" "$pipzip" --python=/usr/bin/$py wheel --verbose "--wheel-dir=$wd" \
+              		"--find-links=$distwheelsd" --no-index --no-deps .
+              	set -- "$wd"/*.whl
+              	[ -f "$1" ] || {
+              		info "did not produce a wheel in $wd"
+              		exit 1
+              	}
+              	info "produced $# wheels: $*"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose \
+              		"--find-links=$distwheelsd" --no-index --no-build-isolation --no-deps \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" "$@"
+              fi
+              vr $py -m compileall --invalidation-mode=unchecked-hash -r100 "$root/$sitepkgd"
+    dependencies:
+      runtime:
+        - py3.10-setuptools
+    description: pip installed for python3.10
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  - name: py3.11-pip-base
+    pipeline:
+      - uses: py/pip-build-install-bootstrap
+        with:
+          dest: /home/build/melange-out/py3.11-pip-base
+          python: python3.11
+        pipeline:
+          - name: pip-bootstrap build
+            runs: |
+              export SOURCE_DATE_EPOCH=315532800
+              py=python3.11
+              pipzip=/usr/share/pip-zipapp/pip-zipapp.pyz
+              [ -e "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip does not exist"
+              	exit 1
+              }
+              [ -f "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip is not a file"
+              	exit 1
+              }
+              if [ "$py" = "DEFAULT" ]; then
+              	if p=$(command -v python3); then
+              		py=$p
+              		if [ -L "$p" ]; then
+              			py=$(readlink -f "$p") ||
+              				{
+              					echo "ERROR: failed 'readlink -f $p'" 1>&2
+              					exit 1
+              				}
+              		fi
+              	else
+              		glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+              		n=0
+              		for p in $glob; do
+              			[ -x "$p" ] && n=$((n + 1)) && py=$p && found="$found $p"
+              		done
+              		if [ "$n" -ne 1 ]; then
+              			echo "ERROR: must set inputs.python: " \
+              				"found $n executables matching $glob" 1>&2
+              			[ "$n" -eq 0 ] || echo "  found: $found" 1>&2
+              			exit 1
+              		fi
+              	fi
+              fi
+              pyver=$("$py" -c 'import sys; print("%s.%s" % (sys.version_info.major, sys.version_info.minor))')
+              sitepkgd=$("$py" -c 'import site; print(site.getsitepackages()[0])')
+              sitepkgd=${sitepkgd#/}
+              root=/home/build/melange-out/py3.11-pip-base
+              wd="./.wheels/$pyver"
+              info() { echo "$@" 1>&2; }
+              vr() {
+              	info "execute:" "$@"
+              	"$@"
+              }
+              tmpd=$(mktemp -d)
+              trap "rm -Rf '$tmpd'" EXIT
+              distwheelsd="/usr/share/pip-zipapp/wheels"
+              mkdir -p "$distwheelsd"
+              info "$py is $pyver with site_packages dir '$sitepkgd'"
+              if [ "true" = "false" ]; then
+              	info "skipping bdist-wheel"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose --no-deps \
+              		"--find-links=$distwheelsd" --no-index \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" .
+              else
+              	vr "$py" "$pipzip" --python=/usr/bin/$py wheel --verbose "--wheel-dir=$wd" \
+              		"--find-links=$distwheelsd" --no-index --no-deps .
+              	set -- "$wd"/*.whl
+              	[ -f "$1" ] || {
+              		info "did not produce a wheel in $wd"
+              		exit 1
+              	}
+              	info "produced $# wheels: $*"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose \
+              		"--find-links=$distwheelsd" --no-index --no-build-isolation --no-deps \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" "$@"
+              fi
+              vr $py -m compileall --invalidation-mode=unchecked-hash -r100 "$root/$sitepkgd"
+    dependencies:
+      runtime:
+        - py3.11-setuptools
+    description: pip installed for python3.11
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  - name: py3.12-pip-base
+    pipeline:
+      - uses: py/pip-build-install-bootstrap
+        with:
+          dest: /home/build/melange-out/py3.12-pip-base
+          python: python3.12
+        pipeline:
+          - name: pip-bootstrap build
+            runs: |
+              export SOURCE_DATE_EPOCH=315532800
+              py=python3.12
+              pipzip=/usr/share/pip-zipapp/pip-zipapp.pyz
+              [ -e "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip does not exist"
+              	exit 1
+              }
+              [ -f "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip is not a file"
+              	exit 1
+              }
+              if [ "$py" = "DEFAULT" ]; then
+              	if p=$(command -v python3); then
+              		py=$p
+              		if [ -L "$p" ]; then
+              			py=$(readlink -f "$p") ||
+              				{
+              					echo "ERROR: failed 'readlink -f $p'" 1>&2
+              					exit 1
+              				}
+              		fi
+              	else
+              		glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+              		n=0
+              		for p in $glob; do
+              			[ -x "$p" ] && n=$((n + 1)) && py=$p && found="$found $p"
+              		done
+              		if [ "$n" -ne 1 ]; then
+              			echo "ERROR: must set inputs.python: " \
+              				"found $n executables matching $glob" 1>&2
+              			[ "$n" -eq 0 ] || echo "  found: $found" 1>&2
+              			exit 1
+              		fi
+              	fi
+              fi
+              pyver=$("$py" -c 'import sys; print("%s.%s" % (sys.version_info.major, sys.version_info.minor))')
+              sitepkgd=$("$py" -c 'import site; print(site.getsitepackages()[0])')
+              sitepkgd=${sitepkgd#/}
+              root=/home/build/melange-out/py3.12-pip-base
+              wd="./.wheels/$pyver"
+              info() { echo "$@" 1>&2; }
+              vr() {
+              	info "execute:" "$@"
+              	"$@"
+              }
+              tmpd=$(mktemp -d)
+              trap "rm -Rf '$tmpd'" EXIT
+              distwheelsd="/usr/share/pip-zipapp/wheels"
+              mkdir -p "$distwheelsd"
+              info "$py is $pyver with site_packages dir '$sitepkgd'"
+              if [ "true" = "false" ]; then
+              	info "skipping bdist-wheel"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose --no-deps \
+              		"--find-links=$distwheelsd" --no-index \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" .
+              else
+              	vr "$py" "$pipzip" --python=/usr/bin/$py wheel --verbose "--wheel-dir=$wd" \
+              		"--find-links=$distwheelsd" --no-index --no-deps .
+              	set -- "$wd"/*.whl
+              	[ -f "$1" ] || {
+              		info "did not produce a wheel in $wd"
+              		exit 1
+              	}
+              	info "produced $# wheels: $*"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose \
+              		"--find-links=$distwheelsd" --no-index --no-build-isolation --no-deps \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" "$@"
+              fi
+              vr $py -m compileall --invalidation-mode=unchecked-hash -r100 "$root/$sitepkgd"
+    dependencies:
+      runtime:
+        - py3.12-setuptools
+    description: pip installed for python3.12
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  - name: py3.13-pip-base
+    pipeline:
+      - uses: py/pip-build-install-bootstrap
+        with:
+          dest: /home/build/melange-out/py3.13-pip-base
+          python: python3.13
+        pipeline:
+          - name: pip-bootstrap build
+            runs: |
+              export SOURCE_DATE_EPOCH=315532800
+              py=python3.13
+              pipzip=/usr/share/pip-zipapp/pip-zipapp.pyz
+              [ -e "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip does not exist"
+              	exit 1
+              }
+              [ -f "$pipzip" ] || {
+              	echo "missing pip-zip - $pipzip is not a file"
+              	exit 1
+              }
+              if [ "$py" = "DEFAULT" ]; then
+              	if p=$(command -v python3); then
+              		py=$p
+              		if [ -L "$p" ]; then
+              			py=$(readlink -f "$p") ||
+              				{
+              					echo "ERROR: failed 'readlink -f $p'" 1>&2
+              					exit 1
+              				}
+              		fi
+              	else
+              		glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+              		n=0
+              		for p in $glob; do
+              			[ -x "$p" ] && n=$((n + 1)) && py=$p && found="$found $p"
+              		done
+              		if [ "$n" -ne 1 ]; then
+              			echo "ERROR: must set inputs.python: " \
+              				"found $n executables matching $glob" 1>&2
+              			[ "$n" -eq 0 ] || echo "  found: $found" 1>&2
+              			exit 1
+              		fi
+              	fi
+              fi
+              pyver=$("$py" -c 'import sys; print("%s.%s" % (sys.version_info.major, sys.version_info.minor))')
+              sitepkgd=$("$py" -c 'import site; print(site.getsitepackages()[0])')
+              sitepkgd=${sitepkgd#/}
+              root=/home/build/melange-out/py3.13-pip-base
+              wd="./.wheels/$pyver"
+              info() { echo "$@" 1>&2; }
+              vr() {
+              	info "execute:" "$@"
+              	"$@"
+              }
+              tmpd=$(mktemp -d)
+              trap "rm -Rf '$tmpd'" EXIT
+              distwheelsd="/usr/share/pip-zipapp/wheels"
+              mkdir -p "$distwheelsd"
+              info "$py is $pyver with site_packages dir '$sitepkgd'"
+              if [ "true" = "false" ]; then
+              	info "skipping bdist-wheel"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose --no-deps \
+              		"--find-links=$distwheelsd" --no-index \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" .
+              else
+              	vr "$py" "$pipzip" --python=/usr/bin/$py wheel --verbose "--wheel-dir=$wd" \
+              		"--find-links=$distwheelsd" --no-index --no-deps .
+              	set -- "$wd"/*.whl
+              	[ -f "$1" ] || {
+              		info "did not produce a wheel in $wd"
+              		exit 1
+              	}
+              	info "produced $# wheels: $*"
+              	vr "$py" "$pipzip" --python=/usr/bin/$py install --verbose \
+              		"--find-links=$distwheelsd" --no-index --no-build-isolation --no-deps \
+              		--force-reinstall --no-compile --prefix=/usr "--root=$root" "$@"
+              fi
+              vr $py -m compileall --invalidation-mode=unchecked-hash -r100 "$root/$sitepkgd"
+    dependencies:
+      runtime:
+        - py3.13-setuptools
+    description: pip installed for python3.13
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  - name: py3.10-pip
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/py3.10-pip/usr/bin
+          mv /home/build/melange-out/py3.10-pip/../py3.10-pip-base/usr/bin/pip /home/build/melange-out/py3.10-pip/usr/bin/
+          mv /home/build/melange-out/py3.10-pip/../py3.10-pip-base/usr/bin/pip3 /home/build/melange-out/py3.10-pip/usr/bin/
+    dependencies:
+      runtime:
+        - py3.10-pip-base
+      provides:
+        - py3-pip
+      provider-priority: "310"
+    description: Executable binaries for pip installed for python3.10
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+    test:
+      environment:
+        contents:
+          packages:
+            - py3.10-pip
+            - python-3.10
+            - wolfi-base
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - name: Basic pip command tests
+          uses: python/import
+          with:
+            import: pip
+          pipeline:
+            - runs: |
+                set +x
+                PYTHON="DEFAULT"
+                SINGLE_IMPORT="pip"
+                MULTIPLE_IMPORTS=""
+                FROM_PKG=""
+                perform_import() {
+                	command="$1"
+                	if $PYTHON -c "$command"; then
+                		echo "$PYTHON -c \"$command\": PASS"
+                	else
+                		echo "$PYTHON -c \"$command\": FAIL"
+                		return 1
+                	fi
+                }
+                if [ "$PYTHON" = "DEFAULT" ]; then
+                	glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+                	n=0
+                	for p in $glob; do
+                		[ -x "$p" ] && n=$((n + 1)) && py=$p
+                	done
+                	if [ "$n" -ne 1 ]; then
+                		echo "FAIL: must set inputs.python: " \
+                			"found $n executables matching $glob"
+                		[ "$n" -eq 0 ] || echo "found:" $glob
+                		exit 1
+                	fi
+                	echo "using python $py"
+                	PYTHON=$py
+                fi
+                if [ -n "$SINGLE_IMPORT" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot mix 'import' with 'imports'."
+                	exit 1
+                fi
+                if [ -n "$FROM_PKG" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot use 'from' with 'imports'."
+                	exit 1
+                fi
+                fail_flag=0
+                if [ -n "$MULTIPLE_IMPORTS" ]; then
+                	importf=$(mktemp) || {
+                		echo "failed mktemp"
+                		exit 1
+                	}
+                	printf "%s\n" "$MULTIPLE_IMPORTS" >"$importf" ||
+                		{
+                			echo "failed to write to temp file"
+                			exit 1
+                		}
+
+                	while read line; do
+
+                		line=${line%%#*}
+                		cmd=$(
+                			set -f
+                			echo $line
+                		)
+                		[ -z "$cmd" ] && continue
+                		perform_import "$cmd" || fail_flag=1
+                	done <"$importf"
+                	rm -f "$importf"
+                elif [ -n "$FROM_PKG" ]; then
+                	if [ -z "$SINGLE_IMPORT" ]; then
+                		echo "Error: 'from' specified without 'import'."
+                		exit 1
+                	fi
+                	command="from $FROM_PKG import $SINGLE_IMPORT"
+                	perform_import "$command" || fail_flag=1
+                elif [ -n "$SINGLE_IMPORT" ]; then
+                	perform_import "import $SINGLE_IMPORT" || fail_flag=1
+                else
+                	echo "No package specified for import."
+                	fail_flag=1
+                fi
+                exit $fail_flag
+        - runs: |
+            pip --version
+            pip --help
+            pip wheel --help
+            pip3 --version
+            pip3 --help
+            pip3 wheel --help
+        - name: Check pip installation of a simple package
+          runs: |
+            pip install requests
+            python -c "import requests; print('requests imported successfully')"
+        - name: Verify pip list and show
+          runs: |
+            pip list | grep requests
+            pip show requests
+        - name: Uninstall the test package
+          runs: |
+            pip uninstall -y requests
+            python -c "import requests" && echo "ERROR: requests not uninstalled" && exit 1 || echo "requests successfully uninstalled"
+        - name: Check pip cache functionality
+          runs: |
+            pip cache list | head -n 10
+            pip cache remove '*'
+            pip cache dir | xargs ls -al
+  - name: py3.11-pip
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/py3.11-pip/usr/bin
+          mv /home/build/melange-out/py3.11-pip/../py3.11-pip-base/usr/bin/pip /home/build/melange-out/py3.11-pip/usr/bin/
+          mv /home/build/melange-out/py3.11-pip/../py3.11-pip-base/usr/bin/pip3 /home/build/melange-out/py3.11-pip/usr/bin/
+    dependencies:
+      runtime:
+        - py3.11-pip-base
+      provides:
+        - py3-pip
+      provider-priority: "311"
+    description: Executable binaries for pip installed for python3.11
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+    test:
+      environment:
+        contents:
+          packages:
+            - py3.11-pip
+            - python-3.11
+            - wolfi-base
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - name: Basic pip command tests
+          uses: python/import
+          with:
+            import: pip
+          pipeline:
+            - runs: |
+                set +x
+                PYTHON="DEFAULT"
+                SINGLE_IMPORT="pip"
+                MULTIPLE_IMPORTS=""
+                FROM_PKG=""
+                perform_import() {
+                	command="$1"
+                	if $PYTHON -c "$command"; then
+                		echo "$PYTHON -c \"$command\": PASS"
+                	else
+                		echo "$PYTHON -c \"$command\": FAIL"
+                		return 1
+                	fi
+                }
+                if [ "$PYTHON" = "DEFAULT" ]; then
+                	glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+                	n=0
+                	for p in $glob; do
+                		[ -x "$p" ] && n=$((n + 1)) && py=$p
+                	done
+                	if [ "$n" -ne 1 ]; then
+                		echo "FAIL: must set inputs.python: " \
+                			"found $n executables matching $glob"
+                		[ "$n" -eq 0 ] || echo "found:" $glob
+                		exit 1
+                	fi
+                	echo "using python $py"
+                	PYTHON=$py
+                fi
+                if [ -n "$SINGLE_IMPORT" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot mix 'import' with 'imports'."
+                	exit 1
+                fi
+                if [ -n "$FROM_PKG" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot use 'from' with 'imports'."
+                	exit 1
+                fi
+                fail_flag=0
+                if [ -n "$MULTIPLE_IMPORTS" ]; then
+                	importf=$(mktemp) || {
+                		echo "failed mktemp"
+                		exit 1
+                	}
+                	printf "%s\n" "$MULTIPLE_IMPORTS" >"$importf" ||
+                		{
+                			echo "failed to write to temp file"
+                			exit 1
+                		}
+
+                	while read line; do
+
+                		line=${line%%#*}
+                		cmd=$(
+                			set -f
+                			echo $line
+                		)
+                		[ -z "$cmd" ] && continue
+                		perform_import "$cmd" || fail_flag=1
+                	done <"$importf"
+                	rm -f "$importf"
+                elif [ -n "$FROM_PKG" ]; then
+                	if [ -z "$SINGLE_IMPORT" ]; then
+                		echo "Error: 'from' specified without 'import'."
+                		exit 1
+                	fi
+                	command="from $FROM_PKG import $SINGLE_IMPORT"
+                	perform_import "$command" || fail_flag=1
+                elif [ -n "$SINGLE_IMPORT" ]; then
+                	perform_import "import $SINGLE_IMPORT" || fail_flag=1
+                else
+                	echo "No package specified for import."
+                	fail_flag=1
+                fi
+                exit $fail_flag
+        - runs: |
+            pip --version
+            pip --help
+            pip wheel --help
+            pip3 --version
+            pip3 --help
+            pip3 wheel --help
+        - name: Check pip installation of a simple package
+          runs: |
+            pip install requests
+            python -c "import requests; print('requests imported successfully')"
+        - name: Verify pip list and show
+          runs: |
+            pip list | grep requests
+            pip show requests
+        - name: Uninstall the test package
+          runs: |
+            pip uninstall -y requests
+            python -c "import requests" && echo "ERROR: requests not uninstalled" && exit 1 || echo "requests successfully uninstalled"
+        - name: Check pip cache functionality
+          runs: |
+            pip cache list | head -n 10
+            pip cache remove '*'
+            pip cache dir | xargs ls -al
+  - name: py3.12-pip
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/py3.12-pip/usr/bin
+          mv /home/build/melange-out/py3.12-pip/../py3.12-pip-base/usr/bin/pip /home/build/melange-out/py3.12-pip/usr/bin/
+          mv /home/build/melange-out/py3.12-pip/../py3.12-pip-base/usr/bin/pip3 /home/build/melange-out/py3.12-pip/usr/bin/
+    dependencies:
+      runtime:
+        - py3.12-pip-base
+      provides:
+        - py3-pip
+      provider-priority: "312"
+    description: Executable binaries for pip installed for python3.12
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+    test:
+      environment:
+        contents:
+          packages:
+            - py3.12-pip
+            - python-3.12
+            - wolfi-base
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - name: Basic pip command tests
+          uses: python/import
+          with:
+            import: pip
+          pipeline:
+            - runs: |
+                set +x
+                PYTHON="DEFAULT"
+                SINGLE_IMPORT="pip"
+                MULTIPLE_IMPORTS=""
+                FROM_PKG=""
+                perform_import() {
+                	command="$1"
+                	if $PYTHON -c "$command"; then
+                		echo "$PYTHON -c \"$command\": PASS"
+                	else
+                		echo "$PYTHON -c \"$command\": FAIL"
+                		return 1
+                	fi
+                }
+                if [ "$PYTHON" = "DEFAULT" ]; then
+                	glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+                	n=0
+                	for p in $glob; do
+                		[ -x "$p" ] && n=$((n + 1)) && py=$p
+                	done
+                	if [ "$n" -ne 1 ]; then
+                		echo "FAIL: must set inputs.python: " \
+                			"found $n executables matching $glob"
+                		[ "$n" -eq 0 ] || echo "found:" $glob
+                		exit 1
+                	fi
+                	echo "using python $py"
+                	PYTHON=$py
+                fi
+                if [ -n "$SINGLE_IMPORT" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot mix 'import' with 'imports'."
+                	exit 1
+                fi
+                if [ -n "$FROM_PKG" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot use 'from' with 'imports'."
+                	exit 1
+                fi
+                fail_flag=0
+                if [ -n "$MULTIPLE_IMPORTS" ]; then
+                	importf=$(mktemp) || {
+                		echo "failed mktemp"
+                		exit 1
+                	}
+                	printf "%s\n" "$MULTIPLE_IMPORTS" >"$importf" ||
+                		{
+                			echo "failed to write to temp file"
+                			exit 1
+                		}
+
+                	while read line; do
+
+                		line=${line%%#*}
+                		cmd=$(
+                			set -f
+                			echo $line
+                		)
+                		[ -z "$cmd" ] && continue
+                		perform_import "$cmd" || fail_flag=1
+                	done <"$importf"
+                	rm -f "$importf"
+                elif [ -n "$FROM_PKG" ]; then
+                	if [ -z "$SINGLE_IMPORT" ]; then
+                		echo "Error: 'from' specified without 'import'."
+                		exit 1
+                	fi
+                	command="from $FROM_PKG import $SINGLE_IMPORT"
+                	perform_import "$command" || fail_flag=1
+                elif [ -n "$SINGLE_IMPORT" ]; then
+                	perform_import "import $SINGLE_IMPORT" || fail_flag=1
+                else
+                	echo "No package specified for import."
+                	fail_flag=1
+                fi
+                exit $fail_flag
+        - runs: |
+            pip --version
+            pip --help
+            pip wheel --help
+            pip3 --version
+            pip3 --help
+            pip3 wheel --help
+        - name: Check pip installation of a simple package
+          runs: |
+            pip install requests
+            python -c "import requests; print('requests imported successfully')"
+        - name: Verify pip list and show
+          runs: |
+            pip list | grep requests
+            pip show requests
+        - name: Uninstall the test package
+          runs: |
+            pip uninstall -y requests
+            python -c "import requests" && echo "ERROR: requests not uninstalled" && exit 1 || echo "requests successfully uninstalled"
+        - name: Check pip cache functionality
+          runs: |
+            pip cache list | head -n 10
+            pip cache remove '*'
+            pip cache dir | xargs ls -al
+  - name: py3.13-pip
+    pipeline:
+      - runs: |
+          mkdir -p /home/build/melange-out/py3.13-pip/usr/bin
+          mv /home/build/melange-out/py3.13-pip/../py3.13-pip-base/usr/bin/pip /home/build/melange-out/py3.13-pip/usr/bin/
+          mv /home/build/melange-out/py3.13-pip/../py3.13-pip-base/usr/bin/pip3 /home/build/melange-out/py3.13-pip/usr/bin/
+    dependencies:
+      runtime:
+        - py3.13-pip-base
+      provides:
+        - py3-pip
+      provider-priority: "313"
+    description: Executable binaries for pip installed for python3.13
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+    test:
+      environment:
+        contents:
+          packages:
+            - py3.13-pip
+            - python-3.13
+            - wolfi-base
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - name: Basic pip command tests
+          uses: python/import
+          with:
+            import: pip
+          pipeline:
+            - runs: |
+                set +x
+                PYTHON="DEFAULT"
+                SINGLE_IMPORT="pip"
+                MULTIPLE_IMPORTS=""
+                FROM_PKG=""
+                perform_import() {
+                	command="$1"
+                	if $PYTHON -c "$command"; then
+                		echo "$PYTHON -c \"$command\": PASS"
+                	else
+                		echo "$PYTHON -c \"$command\": FAIL"
+                		return 1
+                	fi
+                }
+                if [ "$PYTHON" = "DEFAULT" ]; then
+                	glob="/usr/bin/python3.[0-9][0-9] /usr/bin/python3.[789]"
+                	n=0
+                	for p in $glob; do
+                		[ -x "$p" ] && n=$((n + 1)) && py=$p
+                	done
+                	if [ "$n" -ne 1 ]; then
+                		echo "FAIL: must set inputs.python: " \
+                			"found $n executables matching $glob"
+                		[ "$n" -eq 0 ] || echo "found:" $glob
+                		exit 1
+                	fi
+                	echo "using python $py"
+                	PYTHON=$py
+                fi
+                if [ -n "$SINGLE_IMPORT" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot mix 'import' with 'imports'."
+                	exit 1
+                fi
+                if [ -n "$FROM_PKG" ] && [ -n "$MULTIPLE_IMPORTS" ]; then
+                	echo "Error: Cannot use 'from' with 'imports'."
+                	exit 1
+                fi
+                fail_flag=0
+                if [ -n "$MULTIPLE_IMPORTS" ]; then
+                	importf=$(mktemp) || {
+                		echo "failed mktemp"
+                		exit 1
+                	}
+                	printf "%s\n" "$MULTIPLE_IMPORTS" >"$importf" ||
+                		{
+                			echo "failed to write to temp file"
+                			exit 1
+                		}
+
+                	while read line; do
+
+                		line=${line%%#*}
+                		cmd=$(
+                			set -f
+                			echo $line
+                		)
+                		[ -z "$cmd" ] && continue
+                		perform_import "$cmd" || fail_flag=1
+                	done <"$importf"
+                	rm -f "$importf"
+                elif [ -n "$FROM_PKG" ]; then
+                	if [ -z "$SINGLE_IMPORT" ]; then
+                		echo "Error: 'from' specified without 'import'."
+                		exit 1
+                	fi
+                	command="from $FROM_PKG import $SINGLE_IMPORT"
+                	perform_import "$command" || fail_flag=1
+                elif [ -n "$SINGLE_IMPORT" ]; then
+                	perform_import "import $SINGLE_IMPORT" || fail_flag=1
+                else
+                	echo "No package specified for import."
+                	fail_flag=1
+                fi
+                exit $fail_flag
+        - runs: |
+            pip --version
+            pip --help
+            pip wheel --help
+            pip3 --version
+            pip3 --help
+            pip3 wheel --help
+        - name: Check pip installation of a simple package
+          runs: |
+            pip install requests
+            python -c "import requests; print('requests imported successfully')"
+        - name: Verify pip list and show
+          runs: |
+            pip list | grep requests
+            pip show requests
+        - name: Uninstall the test package
+          runs: |
+            pip uninstall -y requests
+            python -c "import requests" && echo "ERROR: requests not uninstalled" && exit 1 || echo "requests successfully uninstalled"
+        - name: Check pip cache functionality
+          runs: |
+            pip cache list | head -n 10
+            pip cache remove '*'
+            pip cache dir | xargs ls -al
+  - name: py3-supported-pip
+    dependencies:
+      runtime:
+        - py3.10-pip-base
+        - py3.11-pip-base
+        - py3.12-pip-base
+        - py3.13-pip-base
+    description: meta package providing pip for supported python versions.
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+  - name: py3-pip-wheel
+    pipeline:
+      - runs: |
+          set -- ./.wheels/*/*.whl
+          [ -e "$1" ] || {
+          	echo "did not find wheels matching ./wheels/*/*.whl"
+          	exit 1
+          }
+          echo "found $# wheels"
+          sha256sum "$@" >/tmp/all
+          found=$1
+          shift
+          read mysum path <"/tmp/all"
+          while read sum path; do
+          	[ "$mysum" = "$sum" ] || {
+          		echo "FAIL: selected wheel '$found' ($mysum) differed from $path $(sum)"
+          		exit 1
+          	}
+          done </tmp/all
+          wdir="/home/build/melange-out/py3-pip-wheel/usr/share/python-wheels"
+          mkdir -p "$wdir"
+          cp -v "$1" "$wdir"
+    dependencies:
+      provider-priority: "10"
+    description: wheel of pip
+    commit: cfbfc5c7500721e9c6e95221587c5d6943cddda5
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  shared: true
+  ignore-regex-patterns:
+    - b
+  github:
+    identifier: pypa/pip
+    use-tag: true
+vars:
+  pypi-package: pip

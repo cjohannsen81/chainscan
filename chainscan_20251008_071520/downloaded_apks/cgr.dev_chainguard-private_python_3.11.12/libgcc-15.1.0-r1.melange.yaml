@@ -1,0 +1,872 @@
+package:
+  name: gcc
+  version: 15.1.0
+  epoch: 1
+  description: the GNU compiler collection
+  commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+  copyright:
+    - license: GPL-3.0-or-later WITH GCC-exception-3.1
+  dependencies:
+    runtime:
+      - binutils
+      - glibc-dev
+      - libquadmath
+      - libstdc++-dev
+      - openssf-compiler-options
+      - posix-cc-wrappers
+  resources:
+    cpu: "16"
+    memory: 16Gi
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.44-r4
+      - bison=3.8.2-r6
+      - build-base=1-r8
+      - busybox=1.37.0-r41
+      - ca-certificates-bundle=20241121-r42
+      - file=5.46-r3
+      - flex-dev=2.6.4-r8
+      - flex=2.6.4-r8
+      - gawk=5.3.2-r0
+      - gcc=15.1.0-r0
+      - glibc-dev=2.41-r4
+      - glibc-iconv=2.41-r4
+      - glibc-locale-posix=2.41-r4
+      - glibc=2.41-r4
+      - gmp-dev=6.3.0-r6
+      - gmp=6.3.0-r6
+      - isl-dev=0.27-r1
+      - isl=0.27-r1
+      - ld-linux=2.41-r4
+      - libatomic=15.1.0-r0
+      - libbz2-1=1.0.8-r12
+      - libcrypt1=2.41-r4
+      - libcrypto3=3.5.0-r2
+      - libfl2=2.6.4-r8
+      - libgcc=15.1.0-r0
+      - libgo=15.1.0-r0
+      - libgomp=15.1.0-r0
+      - libmagic=5.46-r3
+      - libquadmath=15.1.0-r0
+      - libssl3=3.5.0-r2
+      - libstdc++-dev=15.1.0-r0
+      - libstdc++=15.1.0-r0
+      - libxcrypt-dev=4.4.38-r2
+      - libxcrypt=4.4.38-r2
+      - libzstd1=1.5.7-r2
+      - linux-headers=6.15-r1
+      - m4=1.4.20-r2
+      - make=4.4.1-r5
+      - mpc-dev=1.3.1-r6
+      - mpc=1.3.1-r6
+      - mpfr-dev=4.2.2-r1
+      - mpfr=4.2.2-r1
+      - ncurses-terminfo-base=6.5_p20241228-r2
+      - ncurses=6.5_p20241228-r2
+      - nss-db=2.41-r4
+      - nss-hesiod=2.41-r4
+      - openssf-compiler-options=20240627-r20
+      - patch=2.8-r0
+      - perl=5.40.2-r0
+      - pkgconf=2.4.3-r2
+      - posix-cc-wrappers=1-r6
+      - scanelf=1.3.8-r4
+      - texinfo=7.2-r1
+      - wget=1.25.0-r1
+      - wolfi-baselayout=20230201-r20
+      - zlib-dev=1.3.1-r7
+      - zlib=1.3.1-r7
+      - zstd-dev=1.5.7-r2
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha512: ddd35ca6c653dffa88f7c7ef9ee4cd806e156e0f3b30f4d63e75a8363361285cd566ee73127734cde6a934611de815bee3e32e24bfd2e0ab9f7ff35c929821c1
+      purl-name: gcc
+      purl-version: 15.1.0
+      uri: https://ftpmirror.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz
+    pipeline:
+      - runs: |
+          if [ "" == "" ] && [ "ddd35ca6c653dffa88f7c7ef9ee4cd806e156e0f3b30f4d63e75a8363361285cd566ee73127734cde6a934611de815bee3e32e24bfd2e0ab9f7ff35c929821c1" == "" ]; then
+          	printf "One of expected-sha256 or expected-sha512 is required"
+          	exit 1
+          fi
+          bn=$(basename https://ftpmirror.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz)
+          if [ ! "" == "" ]; then
+          	fn="/var/cache/melange/sha256:"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          else
+          	fn="/var/cache/melange/sha512:ddd35ca6c653dffa88f7c7ef9ee4cd806e156e0f3b30f4d63e75a8363361285cd566ee73127734cde6a934611de815bee3e32e24bfd2e0ab9f7ff35c929821c1"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          fi
+          if [ ! -f $bn ]; then
+          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://ftpmirror.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz'
+          fi
+          if [ "" != "" ]; then
+          	printf "fetch: Expected sha256: \n"
+          	sum=$(sha256sum $bn | awk '{print $1}')
+          	if [ "" != "$sum" ]; then
+          		printf "fetch: Expected sha256 does not match found: $sum\n"
+          		exit 1
+          	fi
+          else
+          	printf "fetch: Expected sha512: ddd35ca6c653dffa88f7c7ef9ee4cd806e156e0f3b30f4d63e75a8363361285cd566ee73127734cde6a934611de815bee3e32e24bfd2e0ab9f7ff35c929821c1\n"
+          	sum=$(sha512sum $bn | awk '{print $1}')
+          	if [ "ddd35ca6c653dffa88f7c7ef9ee4cd806e156e0f3b30f4d63e75a8363361285cd566ee73127734cde6a934611de815bee3e32e24bfd2e0ab9f7ff35c929821c1" != "$sum" ]; then
+          		printf "fetch: Expected sha512 does not match found: $sum\n"
+          		exit 1
+          	fi
+          fi
+          if [ "true" = "true" ]; then
+          	tar -x '--strip-components=1' -C '.' -f $bn
+          fi
+          if [ "false" = "true" ]; then
+          	rm $bn
+          fi
+  - name: Set up build directory
+    runs: |
+      mkdir build
+  - name: Configure GCC
+    runs: |
+      case "x86_64" in
+      "aarch64")
+      	march=armv8-a+crc+crypto
+      	mtune=neoverse-v2
+      	CFLAGS="-mbranch-protection=standard"
+      	CXXFLAGS="-mbranch-protection=standard"
+      	specs=""
+      	;;
+      "x86_64")
+      	march=x86-64-v2
+      	mtune=sapphirerapids
+
+      	specs="-mno-sahf"
+      	;;
+      esac
+      cd build
+      CFLAGS="$CFLAGS" \
+      	CXXFLAGS="$CXXFLAGS" \
+      	../configure \
+      	--prefix=/usr \
+      	--disable-nls \
+      	--disable-werror \
+      	--with-pkgversion='Wolfi 15.1.0-r1' \
+      	--with-glibc-version=2.41 \
+      	--enable-initfini-array \
+      	--disable-nls \
+      	--disable-multilib \
+      	--enable-host-shared \
+      	--enable-host-pie \
+      	--enable-host-bind-now \
+      	--enable-shared \
+      	--enable-threads \
+      	--enable-tls \
+      	--enable-default-pie \
+      	--enable-default-ssp \
+      	--with-system-zlib \
+      	--with-arch=$march \
+      	--with-tune=$mtune \
+      	--with-specs=$specs \
+      	--enable-languages=c,c++,fortran,jit,go \
+      	--enable-bootstrap \
+      	--enable-gnu-indirect-function \
+      	--enable-gnu-unique-object \
+      	--enable-cet=auto \
+      	--enable-link-mutex \
+      	--with-gcc-major-version-only \
+      	--with-linker-hash-style=gnu
+  - runs: |
+      make -C build -j$(nproc)
+  - runs: |
+      make -C build -j$(nproc) install DESTDIR="/home/build/melange-out/gcc"
+  - name: Fix /usr/lib64 usage
+    runs: |
+      mv /home/build/melange-out/gcc/usr/lib64/* /home/build/melange-out/gcc/usr/lib/
+      rmdir /home/build/melange-out/gcc/usr/lib64
+  - runs: |
+      find /home/build/melange-out/gcc -name '*.la' -print -exec rm \{} \;
+  - runs: |
+      chmod 755 /home/build/melange-out/gcc/usr/lib/libgcc_s.*
+  - name: Remove some unneeded include-fixed
+    runs: |
+      rm -f /home/build/melange-out/gcc/usr/lib/gcc/x86_64-pc-linux-gnu/15/include-fixed/pthread.h
+  - name: Clean up documentation
+    runs: |
+      rm -rf /home/build/melange-out/gcc/usr/share/info
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/gcc
+subpackages:
+  - name: gcc-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/gcc"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/gcc-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+              	mkdir -p "/home/build/melange-out/gcc-doc/usr/share"
+              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/gcc-doc/usr/share"
+              fi
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - gcc-doc
+            - grep
+            - man-db
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/gcc-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+  - name: libstdc++
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libstdc++"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/*++.so.* "/home/build/melange-out/libstdc++"/usr/lib/
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libstdc++
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libstdc++" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libstdc++-dev
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libstdc++-dev"/usr/lib
+          mkdir -p "/home/build/melange-out/libstdc++-dev"/usr/include
+          mkdir -p "/home/build/melange-out/libstdc++-dev"/usr/share/gcc-15/python/libstdcxx
+          mv "/home/build/melange-out/gcc"/usr/lib/*++.a "/home/build/melange-out/libstdc++-dev"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/lib/libstdc++.so "/home/build/melange-out/libstdc++-dev"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/include/*++* "/home/build/melange-out/libstdc++-dev"/usr/include/
+          mv "/home/build/melange-out/gcc"/usr/share/gcc-15/python/libstdcxx/* \
+          	"/home/build/melange-out/libstdc++-dev"/usr/share/gcc-15/python/libstdcxx/
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+  - name: libquadmath
+    pipeline:
+      - if: '"x86_64" == ''x86_64'''
+        runs: |
+          mkdir -p "/home/build/melange-out/libquadmath"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libquadmath.so.* "/home/build/melange-out/libquadmath"/usr/lib/
+    description: 128-bit math library provided by GCC
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libquadmath
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libquadmath" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libgfortran
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgfortran"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libgfortran.so.* "/home/build/melange-out/libgfortran"/usr/lib/
+    description: Fortran runtime library provided by GCC
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libgfortran
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libgfortran" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: gfortran
+    pipeline:
+      - runs: |
+          _libexecdir=/usr/libexec/gcc/x86_64-pc-linux-gnu/15
+          _libdir=/usr/lib/gcc/x86_64-pc-linux-gnu/15
+          for i in "$_libexecdir" "$_libdir" usr/lib usr/bin; do
+          	mkdir -p "/home/build/melange-out/gfortran"/$i
+          done
+          mv "/home/build/melange-out/gcc"/usr/bin/*fortran "/home/build/melange-out/gfortran"/usr/bin
+          mv "/home/build/melange-out/gcc"/usr/lib/libgfortran* "/home/build/melange-out/gfortran"/usr/lib
+          [ -f "/home/build/melange-out/gcc"/usr/lib/libquadmath* ] && mv "/home/build/melange-out/gcc"/usr/lib/libquadmath* "/home/build/melange-out/gfortran"/usr/lib
+          mv "/home/build/melange-out/gcc"/$_libdir/finclude "/home/build/melange-out/gfortran"/$_libdir
+          mv "/home/build/melange-out/gcc"/$_libexecdir/f951 "/home/build/melange-out/gfortran"/$_libexecdir
+    dependencies:
+      runtime:
+        - gcc
+        - libgfortran
+    description: GNU Fortran Compiler
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - gfortran
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            gfortran --version
+            gfortran --help
+  - name: libgccjit
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgccjit"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libgccjit.so.* "/home/build/melange-out/libgccjit"/usr/lib/
+    description: GCC JIT library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libgccjit
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libgccjit" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libgccjit-dev
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgccjit-dev"/usr/lib
+          mkdir -p "/home/build/melange-out/libgccjit-dev"/usr/include
+          mv "/home/build/melange-out/gcc"/usr/lib/libgccjit.so "/home/build/melange-out/libgccjit-dev"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/include/libgccjit*.h "/home/build/melange-out/libgccjit-dev"/usr/include/
+    description: GCC JIT library headers
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+  - name: libssp
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libssp"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libssp* "/home/build/melange-out/libssp"/usr/lib
+    description: GCC stack protection library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+  - name: libgomp
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgomp"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libgomp.so.* "/home/build/melange-out/libgomp"/usr/lib/
+    description: GNU parallel programming library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libgomp
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libgomp" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libgcc
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgcc"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libgcc_s.so.* "/home/build/melange-out/libgcc"/usr/lib/
+    description: GCC runtime library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libgcc
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libgcc" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libatomic
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libatomic"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libatomic.so.* "/home/build/melange-out/libatomic"/usr/lib/
+    description: GCC atomic library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libatomic
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libatomic" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: libgo
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/libgo"/usr/lib
+          mv "/home/build/melange-out/gcc"/usr/lib/libgo.so.* "/home/build/melange-out/libgo"/usr/lib/
+    description: GCC go runtime library
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - libgo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="libgo" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: gcc-go
+    pipeline:
+      - runs: |
+          _libexecdir=/usr/libexec/gcc/x86_64-pc-linux-gnu/15
+          for i in "$_libexecdir" usr/lib usr/bin; do
+          	mkdir -p "/home/build/melange-out/gcc-go"/$i
+          done
+          mv "/home/build/melange-out/gcc"/usr/bin/x86_64-pc-linux-gnu-gccgo "/home/build/melange-out/gcc-go"/usr/bin/
+          for i in go gofmt gccgo; do
+          	mv "/home/build/melange-out/gcc"/usr/bin/$i "/home/build/melange-out/gcc-go"/usr/bin/
+          done
+          mv "/home/build/melange-out/gcc"/usr/lib/go "/home/build/melange-out/gcc-go"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/lib/libgo.a "/home/build/melange-out/gcc-go"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/lib/libgobegin.a "/home/build/melange-out/gcc-go"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/lib/libgolibbegin.a "/home/build/melange-out/gcc-go"/usr/lib/
+          mv "/home/build/melange-out/gcc"/usr/lib/libgo.so "/home/build/melange-out/gcc-go"/usr/lib/
+          for i in cgo go1; do
+          	mv "/home/build/melange-out/gcc"/"$_libexecdir"/$i "/home/build/melange-out/gcc-go"/"$_libexecdir"/
+          done
+    dependencies:
+      provides:
+        - go-bootstrap=1.18
+    description: GCC go compiler
+    commit: 21f898ccd7a998d94cd29990e1af7361c36568b4
+    test:
+      environment:
+        contents:
+          packages:
+            - gcc-go
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            gccgo --version
+            gccgo --help
+            go version
+            go help
+            gofmt --help
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 6502
+var-transforms:
+  - from: ${{package.version}}
+    match: ^(\d+).*
+    replace: $1
+    to: major-version
+test:
+  environment:
+    contents:
+      packages:
+        - gcc
+        - glibc-dev
+        - hardening-check
+        - ldd-check
+        - openssf-compiler-options
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - name: Check basic usage of top level & libexec binaries
+      runs: |
+        gcc --version | grep 15.1.0
+        g++ --version | grep 15.1.0
+        : >empty.c
+        gcc -c empty.c
+        rm -f empty.cpp
+        : >empty.cpp
+        g++ -c empty.cpp
+        c++ --version
+        c++ --help
+        cpp --version
+        cpp --help
+        g++ --help
+        gcc --help
+        gcc-ar --version
+        gcc-ar --help
+        gcc-nm --version
+        gcc-nm --help
+        gcc-ranlib --version
+        gcc-ranlib --help
+        gcov --version
+        gcov --help
+        gcov-dump --version
+        gcov-dump --help
+        gcov-tool --version
+        gcov-tool --help
+        lto-dump --version
+        lto-dump --help
+    - name: hello world c
+      runs: |
+        cat >hello.c <<"EOF"
+        #include <stdio.h>
+        int main(int argc, char* argv[]) {
+            printf("hello-c");
+            return 0;
+        }
+        EOF
+        gcc -o hello-c hello.c
+        out=$(./hello-c)
+        [ "$out" = "hello-c" ]
+    - name: hello world c++
+      runs: |
+        cat >hello.cpp <<"EOF"
+        #include <iostream>
+        int main() {
+            std::cout << "hello-c++";
+            return 0;
+        }
+        EOF
+        g++ -o hello-c++ hello.cpp
+        out=$(./hello-c++)
+        [ "$out" = "hello-c++" ]
+    - uses: test/compiler-hardening-check
+      with:
+        cc: gcc
+      pipeline:
+        - name: compiler hardening check
+          runs: |
+            cat >hello.c <<"EOF"
+            #include <alloca.h>
+            #include <stdio.h>
+            #include <string.h>
+            int main(int argc, char* argv[]) {
+                printf("hello-c");
+                char buffer[5000];
+                strcpy(buffer, argv[0]);
+                char* dynbuffer = alloca(argc * 1000);
+                strcpy(dynbuffer, argv[0]);
+                return buffer[argc] + dynbuffer[argc];
+            }
+            EOF
+            gcc -v -o hello-default hello.c
+            out=$(./hello-default 1 || true)
+            [ "$out" = "hello-c" ]
+            case gcc in
+            clang*)
+            	disablearg=--config-system-dir=/var/empty
+            	;;
+            esac
+            GCC_SPEC_FILE=/dev/null gcc $disablearg -v -o hello-disabled hello.c
+            out=$(./hello-disabled 1 || true)
+            [ "$out" = "hello-c" ]
+            GCC_SPEC_FILE=/dev/null gcc -fhardened -Wl,-z,lazy -v -o hello-lazy hello.c || cp hello-disabled hello-lazy
+            out=$(./hello-lazy 1 || true)
+            [ "$out" = "hello-c" ]
+            arch_skip=
+            if [ "x86_64" = "aarch64" ]; then
+            	arch_skip=--nocfprotection
+            fi
+            [ "x86_64" = "aarch64" ] || arch_skip=--nobranchprotection
+            if [ "x86_64" = "aarch64" ]; then
+            	arch_skip="$arch_skip --nobranchprotection"
+            fi
+            hardening-check --nostackprotector $arch_skip --color hello-disabled && exit 1
+            hardening-check --nostackprotector $arch_skip --color hello-lazy && exit 1
+            hardening-check --nostackprotector $arch_skip --color hello-default
+    - uses: test/tw/ldd-check
+      pipeline:
+        - name: check for missing library dependencies using ldd
+          runs: |
+            ldd-check \
+            	--files="" \
+            	--packages="gcc" \
+            	--extra-library-paths="" \
+            	--verbose="false"

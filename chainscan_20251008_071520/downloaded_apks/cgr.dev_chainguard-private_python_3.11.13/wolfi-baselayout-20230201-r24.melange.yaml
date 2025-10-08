@@ -1,0 +1,137 @@
+package:
+  name: wolfi-baselayout
+  version: "20230201"
+  epoch: 24
+  description: baselayout data for Wolfi
+  commit: 5e4608aee947a07d2d0aced99d17a278298dce6b
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - ca-certificates-bundle
+    provides:
+      - merged-sbin
+      - merged-bin
+      - merged-usrsbin
+      - merged-lib
+  checks:
+    disabled:
+      - usrmerge
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox=1.37.0-r50
+      - ca-certificates-bundle=20250619-r6
+      - glibc-locale-posix=2.42-r0
+      - glibc=2.42-r0
+      - ld-linux=2.42-r0
+      - libcrypt1=2.42-r0
+      - libgcc=15.2.0-r2
+      - libxcrypt=4.4.38-r4
+      - wolfi-baselayout=20230201-r23
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - name: Generate /etc/shadow
+    runs: |
+      awk -F: '{
+          pw = ":!:"
+          if ($1 == "root") { pw = ":*:" }
+          print($1 pw ":0:::::")
+      }' vendor/etc/passwd >vendor/etc/shadow
+  - name: Generate /etc/os-release
+    runs: |
+      cat >vendor/etc/os-release <<EOF
+      ID=wolfi
+      NAME="Wolfi"
+      PRETTY_NAME="Wolfi"
+      VERSION_ID="20230201"
+      HOME_URL="https://wolfi.dev"
+      BUG_REPORT_URL="https://github.com/wolfi-dev/os/issues"
+      EOF
+  - name: Install
+    runs: |
+      for i in dev etc etc/profile.d etc/secfixes.d home proc root var/log usr/bin usr/local/lib sys tmp var/spool/cron opt run usr/lib; do
+      	mkdir -p "/home/build/melange-out/wolfi-baselayout"/${i}
+      done
+      chmod 1777 "/home/build/melange-out/wolfi-baselayout/tmp"
+      ln -sf usr/bin /home/build/melange-out/wolfi-baselayout/sbin
+      ln -sf usr/bin /home/build/melange-out/wolfi-baselayout/bin
+      ln -sf bin /home/build/melange-out/wolfi-baselayout/usr/sbin
+      ln -sf usr/lib /home/build/melange-out/wolfi-baselayout/lib
+      ln -sf usr/lib /home/build/melange-out/wolfi-baselayout/lib64
+      ln -sf lib /home/build/melange-out/wolfi-baselayout/usr/lib64
+      ln -sf lib /home/build/melange-out/wolfi-baselayout/usr/local/lib64
+      for i in etc/passwd etc/group etc/shadow etc/services etc/hosts etc/profile etc/shells etc/protocols etc/profile.d/locale.sh etc/nsswitch.conf etc/os-release etc/secfixes.d/wolfi; do
+      	install -m644 vendor/${i} "/home/build/melange-out/wolfi-baselayout"/${i}
+      done
+      install -m000 vendor/etc/shadow "/home/build/melange-out/wolfi-baselayout"/etc/shadow
+      ln -s /etc/crontabs "/home/build/melange-out/wolfi-baselayout"/var/spool/cron/crontabs
+      ln -s /proc/mounts "/home/build/melange-out/wolfi-baselayout"/etc/mtab
+      ln -s /var/mail "/home/build/melange-out/wolfi-baselayout"/var/spool/mail
+      echo 'multi on' >"/home/build/melange-out/wolfi-baselayout"/etc/host.conf
+      chmod 0700 "/home/build/melange-out/wolfi-baselayout"/root
+      mkdir -p "/home/build/melange-out/wolfi-baselayout"/var/empty
+      chmod 755 "/home/build/melange-out/wolfi-baselayout"/var/empty
+update:
+  enabled: false
+  manual: false
+  require-sequential: false
+  exclude-reason: wolfi-baselayout is a static layout package
+test:
+  environment:
+    contents:
+      packages:
+        - wolfi-baselayout
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - name: Files exist
+      runs: |
+        test -f /etc/passwd
+        test -f /etc/shadow
+        [ "$(stat -c %a /etc/shadow)" = "0" ]
+        test -f /etc/os-release
+        test -f /etc/host.conf
+        test -d /var/empty
+    - name: Scanner expectations
+      runs: |
+        grep 'ID=wolfi' /etc/os-release
+        grep 'VERSION_ID="20230201"' /etc/os-release

@@ -1,0 +1,514 @@
+package:
+  name: ncurses
+  version: 6.5_p20250621
+  epoch: 1
+  description: console display library
+  commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+  copyright:
+    - license: MIT
+  dependencies:
+    runtime:
+      - ncurses-terminfo-base
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.44-r10
+      - build-base=1-r8
+      - busybox=1.37.0-r47
+      - ca-certificates-bundle=20250619-r3
+      - gcc=15.1.0-r3
+      - glibc-dev=2.41-r54
+      - glibc-locale-posix=2.41-r54
+      - glibc=2.41-r54
+      - gmp=6.3.0-r8
+      - isl=0.27-r4
+      - ld-linux=2.41-r54
+      - libatomic=15.1.0-r3
+      - libcrypt1=2.41-r54
+      - libcrypto3=3.5.1-r0
+      - libgcc=15.1.0-r3
+      - libgo=15.1.0-r3
+      - libgomp=15.1.0-r3
+      - libquadmath=15.1.0-r3
+      - libssl3=3.5.1-r0
+      - libstdc++-dev=15.1.0-r3
+      - libstdc++=15.1.0-r3
+      - libxcrypt-dev=4.4.38-r2
+      - libxcrypt=4.4.38-r2
+      - libzstd1=1.5.7-r2
+      - linux-headers=6.15.7-r0
+      - make=4.4.1-r8
+      - mpc=1.3.1-r7
+      - mpfr=4.2.2-r2
+      - ncurses-terminfo-base=6.5_p20250621-r0
+      - ncurses=6.5_p20250621-r0
+      - nss-db=2.41-r54
+      - nss-hesiod=2.41-r54
+      - openssf-compiler-options=20240627-r25
+      - pkgconf=2.5.1-r1
+      - posix-cc-wrappers=1-r7
+      - scanelf=1.3.8-r5
+      - wget=1.25.0-r3
+      - wolfi-baselayout=20230201-r23
+      - zlib=1.3.1-r51
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha512: 1b665749b822133e7166c21e44e0cf0d94766a7ed4f96a6138de43c46c8ce85ed0c5d5230c050103de3830e7d2fc35c283262d30990b9de30851d1f999525b85
+      purl-name: ncurses
+      purl-version: 6.5_p20250621
+      uri: https://invisible-mirror.net/archives/ncurses/current/ncurses-6.5-20250621.tgz
+    pipeline:
+      - runs: |
+          if [ "" == "" ] && [ "1b665749b822133e7166c21e44e0cf0d94766a7ed4f96a6138de43c46c8ce85ed0c5d5230c050103de3830e7d2fc35c283262d30990b9de30851d1f999525b85" == "" ]; then
+          	printf "One of expected-sha256 or expected-sha512 is required"
+          	exit 1
+          fi
+          bn=$(basename https://invisible-mirror.net/archives/ncurses/current/ncurses-6.5-20250621.tgz)
+          if [ ! "" == "" ]; then
+          	fn="/var/cache/melange/sha256:"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          else
+          	fn="/var/cache/melange/sha512:1b665749b822133e7166c21e44e0cf0d94766a7ed4f96a6138de43c46c8ce85ed0c5d5230c050103de3830e7d2fc35c283262d30990b9de30851d1f999525b85"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          fi
+          if [ ! -f $bn ]; then
+          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://invisible-mirror.net/archives/ncurses/current/ncurses-6.5-20250621.tgz'
+          fi
+          if [ "" != "" ]; then
+          	printf "fetch: Expected sha256: \n"
+          	sum=$(sha256sum $bn | awk '{print $1}')
+          	if [ "" != "$sum" ]; then
+          		printf "fetch: Expected sha256 does not match found: $sum\n"
+          		exit 1
+          	fi
+          else
+          	printf "fetch: Expected sha512: 1b665749b822133e7166c21e44e0cf0d94766a7ed4f96a6138de43c46c8ce85ed0c5d5230c050103de3830e7d2fc35c283262d30990b9de30851d1f999525b85\n"
+          	sum=$(sha512sum $bn | awk '{print $1}')
+          	if [ "1b665749b822133e7166c21e44e0cf0d94766a7ed4f96a6138de43c46c8ce85ed0c5d5230c050103de3830e7d2fc35c283262d30990b9de30851d1f999525b85" != "$sum" ]; then
+          		printf "fetch: Expected sha512 does not match found: $sum\n"
+          		exit 1
+          	fi
+          fi
+          if [ "true" = "true" ]; then
+          	tar -x '--strip-components=1' -C '.' -f $bn
+          fi
+          if [ "false" = "true" ]; then
+          	rm $bn
+          fi
+  - name: Configure
+    runs: |
+      ./configure \
+      	--prefix=/usr \
+      	--host=x86_64-pc-linux-gnu \
+      	--mandir=/usr/share/man \
+      	--without-ada \
+      	--without-tests \
+      	--disable-termcap \
+      	--disable-rpath-hack \
+      	--disable-stripping \
+      	--with-pkg-config-libdir=/usr/lib/pkgconfig \
+      	--without-cxx-binding \
+      	--with-terminfo-dirs="/etc/terminfo:/usr/share/terminfo:/lib/terminfo:/usr/lib/terminfo" \
+      	--enable-pc-files \
+      	--with-shared \
+      	--enable-widec \
+      	--with-termlib=tinfo \
+      	--with-xterm-kbs=DEL
+  - uses: autoconf/make
+    pipeline:
+      - runs: |
+          make -C "." -j$(nproc) V=1
+  - uses: autoconf/make-install
+    pipeline:
+      - runs: |
+          make -C "." install DESTDIR="/home/build/melange-out/ncurses" V=1
+      - runs: |
+          find /home/build/melange-out/ncurses -name '*.la' -print -exec rm \{} \;
+  - name: Set up development files
+    runs: |
+      for lib in ncurses ncurses++ form panel menu; do
+      	ln -s ${lib}w.pc /home/build/melange-out/ncurses/usr/lib/pkgconfig/${lib}.pc
+      	ln -s lib${lib}w.a /home/build/melange-out/ncurses/usr/lib/lib${lib}.a
+      	echo "INPUT(-l${lib}w -ltinfo)" >/home/build/melange-out/ncurses/usr/lib/lib${lib}.so
+      done
+      ln -s libncurses.a /home/build/melange-out/ncurses/usr/lib/libcurses.a
+      ln -s libncurses.so /home/build/melange-out/ncurses/usr/lib/libcurses.so
+      echo 'INPUT(-lncursesw -ltinfo)' >/home/build/melange-out/ncurses/usr/lib/libcursesw.so
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/ncurses
+subpackages:
+  - name: ncurses-static
+    pipeline:
+      - uses: split/static
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/ncurses"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/ncurses-static" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in \
+              	$(find $libdirs -name '*.a' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/ncurses-static/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+    description: ncurses static
+    commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+  - name: ncurses-dev
+    pipeline:
+      - uses: split/dev
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/ncurses"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/ncurses-dev" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in usr/include usr/lib/pkgconfig usr/share/pkgconfig \
+              	usr/share/aclocal usr/share/gettext \
+              	usr/bin/*-config usr/bin/*_config usr/share/vala/vapi \
+              	usr/share/gir-[0-9]* usr/share/qt*/mkspecs \
+              	usr/lib/qt*/mkspecs \
+              	usr/lib/cmake usr/share/cmake \
+              	usr/lib/glade/modules usr/share/glade/catalogs \
+              	$(find . -name include -type d) \
+              	$(find $libdirs -name '*.a' 2>/dev/null) \
+              	$(find $libdirs -name '*.[cho]' \
+              		-o -name '*.prl' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/ncurses-dev/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+              for i in lib/*.so usr/lib/*.so; do
+              	if [ -L "$i" ]; then
+              		mkdir -p "/home/build/melange-out/ncurses-dev"/"${i%/*}"
+              		mv "$i" "/home/build/melange-out/ncurses-dev/$i" || return 1
+              	fi
+              done
+      - runs: |
+          mv "/home/build/melange-out/ncurses"/usr/lib/lib*.so "/home/build/melange-out/ncurses-dev"/usr/lib/
+    dependencies:
+      runtime:
+        - ncurses
+      provides:
+        - pc:ncurses
+    description: ncurses headers
+    commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - ncurses-dev
+            - pkgconf
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - runs: |
+            ncursesw6-config --version
+            ncursesw6-config --help
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="ncurses-dev" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+        - uses: test/pkgconf
+          pipeline:
+            - name: pkgconf build dependency check
+              runs: |
+                dev_pkg=$(basename /home/build/melange-out/ncurses-dev)
+                cd /
+                pc_files=false
+                for pc_file in $(apk info -L "$dev_pkg" 2>/dev/null | grep "\.pc$"); do
+                	pc_files=true
+
+                	if grep -q "^Name:" $pc_file; then
+                		lib_name=$(basename "$pc_file" ".pc")
+
+                		echo "$pc_file" | grep -q "^usr/lib/pkgconfig/${lib_name}.pc$\|^usr/share/pkgconfig/${lib_name}.pc$"
+
+                		pkgconf --exists $lib_name || pkgconf --print-errors --exists $lib_name
+
+                		if grep -q "^Version:" $pc_file; then
+                			pkgconf --modversion $lib_name
+                		fi
+
+                		if grep -q "^Libs:" $pc_file; then
+                			pkgconf --libs $lib_name
+                		fi
+
+                		if grep -q "^Cflags:" $pc_file; then
+                			pkgconf --cflags $lib_name
+                		fi
+                	fi
+                done
+                if [ $pc_files = "false" ]; then
+                	echo "No .pc files found in $dev_pkg please remove the pkgconf test"
+                fi
+  - name: ncurses-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/ncurses"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" = "/home/build/melange-out/ncurses-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              for mandir in \
+              	"$PACKAGE_DIR/usr/share/man" \
+              	"$PACKAGE_DIR/usr/local/share/man" \
+              	"$PACKAGE_DIR/usr/man"; do
+
+              	if [ -d "$mandir" ]; then
+              		mkdir -p "/home/build/melange-out/ncurses-doc/usr/share/man"
+              		mv "$mandir"/* "/home/build/melange-out/ncurses-doc/usr/share/man/"
+              		rmdir --parents --ignore-fail-on-non-empty "$mandir"
+              	fi
+              done
+    description: ncurses documentation
+    commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - grep
+            - man-db
+            - ncurses-doc
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/ncurses-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/" | grep -v "^usr/share/man/db/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+  - name: ncurses-terminfo-base
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/a
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/a/alacritty "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/a
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/a/ansi "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/a
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/d
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/d/dumb "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/d
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/g
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/g/gnome* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/g
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/k
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/k/konsole* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/k
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/l
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/l/linux "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/l
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/p
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/p/putty* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/p
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/s
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/s/screen* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/s
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/s/st-* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/s
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/s/sun "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/s
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/t
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/t/terminator "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/t
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/t/terminology* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/t
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/t/tmux* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/t
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/v
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/v/vt1* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/v
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/v/vt2* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/v
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/v/vt52 "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/v
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/v/vte* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/v
+          mkdir -p "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/x
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo/x/xterm* "/home/build/melange-out/ncurses-terminfo-base"/etc/terminfo/x
+    description: descriptions of common terminals
+    commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+  - name: ncurses-terminfo
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/ncurses-terminfo"/usr/share
+          mv "/home/build/melange-out/ncurses"/usr/share/terminfo "/home/build/melange-out/ncurses-terminfo"/usr/share
+    description: other terminal descriptions
+    commit: dedd0db9fa052224b3d83efd470f6c700a30b98d
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 2057
+  version-transform:
+    - match: \-
+      replace: _p
+var-transforms:
+  - from: ${{package.version}}
+    match: _p(\d+)$
+    replace: -$1
+    to: mangled-package-version
+test:
+  environment:
+    contents:
+      packages:
+        - ldd-check
+        - ncurses
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - runs: |
+        captoinfo -V
+        clear -V
+        infocmp -V
+        infotocap -V
+        reset -V
+        tabs -V
+        tic -V
+        toe version
+        tput -V
+        tset -V
+        toe help
+    - uses: test/tw/ldd-check
+      pipeline:
+        - name: check for missing library dependencies using ldd
+          runs: |
+            ldd-check \
+            	--files="" \
+            	--packages="ncurses" \
+            	--extra-library-paths="" \
+            	--verbose="false"

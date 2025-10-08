@@ -1,0 +1,453 @@
+package:
+  name: sqlite
+  version: 3.50.0
+  epoch: 0
+  description: C library which implements an SQL database engine
+  commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
+  copyright:
+    - license: blessing
+  resources: {}
+environment:
+  contents:
+    build_repositories:
+      - https://apk.cgr.dev/chainguard
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - binutils=2.44-r3
+      - build-base=1-r8
+      - busybox=1.37.0-r41
+      - ca-certificates-bundle=20241121-r42
+      - gcc=14.2.0-r13
+      - glibc-dev=2.41-r4
+      - glibc-locale-posix=2.41-r4
+      - glibc=2.41-r4
+      - gmp=6.3.0-r5
+      - isl=0.27-r1
+      - ld-linux=2.41-r4
+      - libatomic=14.2.0-r13
+      - libcrypt1=2.41-r4
+      - libcrypto3=3.5.0-r2
+      - libgcc=14.2.0-r13
+      - libgo=14.2.0-r13
+      - libgomp=14.2.0-r13
+      - libquadmath=14.2.0-r13
+      - libssl3=3.5.0-r2
+      - libstdc++-dev=14.2.0-r13
+      - libstdc++=14.2.0-r13
+      - libxcrypt-dev=4.4.38-r2
+      - libxcrypt=4.4.38-r2
+      - libzstd1=1.5.7-r2
+      - linux-headers=6.15-r1
+      - make=4.4.1-r5
+      - mpc=1.3.1-r6
+      - mpfr=4.2.2-r1
+      - ncurses-dev=6.5_p20240629-r0
+      - ncurses-terminfo-base=6.5_p20241228-r2
+      - ncurses=6.5_p20241228-r2
+      - nss-db=2.41-r4
+      - nss-hesiod=2.41-r4
+      - openssf-compiler-options=20240627-r20
+      - pkgconf=2.4.3-r2
+      - posix-cc-wrappers=1-r6
+      - readline-dev=8.2.13-r4
+      - readline=8.2.13-r4
+      - scanelf=1.3.8-r4
+      - wget=1.25.0-r1
+      - wolfi-baselayout=20230201-r20
+      - zlib=1.3.1-r7
+  accounts:
+    run-as: ""
+    users:
+      - username: build
+        uid: 1000
+        gid: 1000
+        shell: ""
+        homedir: /home/build
+    groups:
+      - groupname: build
+        gid: 1000
+        members:
+          - build
+  archs:
+    - amd64
+  environment:
+    GOFLAGS: ""
+    GOMODCACHE: /var/cache/melange/gomodcache
+    GOPATH: /home/build/.cache/go
+    GOTOOLCHAIN: local
+    HOME: /home/build
+    PYTHONHASHSEED: "0"
+pipeline:
+  - uses: fetch
+    with:
+      expected-sha256: 3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327
+      purl-name: sqlite
+      purl-version: 3.50.0
+      uri: https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz
+    pipeline:
+      - runs: |
+          if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" == "" ] && [ "" == "" ]; then
+          	printf "One of expected-sha256 or expected-sha512 is required"
+          	exit 1
+          fi
+          bn=$(basename https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz)
+          if [ ! "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" == "" ]; then
+          	fn="/var/cache/melange/sha256:3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          else
+          	fn="/var/cache/melange/sha512:"
+          	if [ -f $fn ]; then
+          		printf "fetch: found $fn in cache\n"
+          		cp $fn $bn
+          	fi
+          fi
+          if [ ! -f $bn ]; then
+          	wget '-T5' '--dns-timeout=20' '--tries=5' --random-wait --retry-connrefused --continue 'https://www.sqlite.org/2025/sqlite-autoconf-3500000.tar.gz'
+          fi
+          if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" != "" ]; then
+          	printf "fetch: Expected sha256: 3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327\n"
+          	sum=$(sha256sum $bn | awk '{print $1}')
+          	if [ "3bc776a5f243897415f3b80fb74db3236501d45194c75c7f69012e4ec0128327" != "$sum" ]; then
+          		printf "fetch: Expected sha256 does not match found: $sum\n"
+          		exit 1
+          	fi
+          else
+          	printf "fetch: Expected sha512: \n"
+          	sum=$(sha512sum $bn | awk '{print $1}')
+          	if [ "" != "$sum" ]; then
+          		printf "fetch: Expected sha512 does not match found: $sum\n"
+          		exit 1
+          	fi
+          fi
+          if [ "true" = "true" ]; then
+          	tar -x '--strip-components=1' -C '.' -f $bn
+          fi
+          if [ "false" = "true" ]; then
+          	rm $bn
+          fi
+  - name: Configure
+    runs: |
+      _amalgamation="-DSQLITE_ENABLE_FTS4 \
+        -DSQLITE_ENABLE_FTS3_PARENTHESIS \
+        -DSQLITE_ENABLE_FTS3 \
+        -DSQLITE_ENABLE_FTS5 \
+        -DSQLITE_ENABLE_COLUMN_METADATA \
+        -DSQLITE_SECURE_DELETE \
+        -DSQLITE_ENABLE_UNLOCK_NOTIFY \
+        -DSQLITE_ENABLE_RTREE \
+        -DSQLITE_ENABLE_GEOPOLY \
+        -DSQLITE_USE_URI \
+        -DSQLITE_ENABLE_DBSTAT_VTAB \
+        -DSQLITE_MAX_VARIABLE_NUMBER=250000"
+      export CFLAGS="$CFLAGS $_amalgamation"
+      ./configure \
+      	--host=x86_64-pc-linux-gnu \
+      	--prefix=/usr \
+      	--soname=legacy \
+      	--enable-threadsafe \
+      	--enable-readline \
+      	--enable-static \
+      	--enable-load-extension \
+      	--enable-fts3
+      make -j$(nproc) V=1
+  - uses: autoconf/make-install
+    pipeline:
+      - runs: |
+          make -C "." install DESTDIR="/home/build/melange-out/sqlite" V=1
+      - runs: |
+          find /home/build/melange-out/sqlite -name '*.la' -print -exec rm \{} \;
+  - uses: strip
+    pipeline:
+      - runs: |
+          scanelf --recursive --nobanner --osabi --etype "ET_DYN,ET_EXEC" . |
+          	while read type osabi filename; do
+
+          		[ "$osabi" != "STANDALONE" ] || continue
+
+          		strip -g "${filename}" || [ ! -e "$filename" ]
+          	done
+        working-directory: /home/build/melange-out/sqlite
+subpackages:
+  - name: sqlite-dev
+    pipeline:
+      - uses: split/dev
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/sqlite"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/sqlite-dev" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              i= j=
+              cd "$PACKAGE_DIR" || exit 0
+              libdirs=usr/
+              [ -d lib/ ] && libdirs="lib/ $libdirs"
+              for i in usr/include usr/lib/pkgconfig usr/share/pkgconfig \
+              	usr/share/aclocal usr/share/gettext \
+              	usr/bin/*-config usr/bin/*_config usr/share/vala/vapi \
+              	usr/share/gir-[0-9]* usr/share/qt*/mkspecs \
+              	usr/lib/qt*/mkspecs \
+              	usr/lib/cmake usr/share/cmake \
+              	usr/lib/glade/modules usr/share/glade/catalogs \
+              	$(find . -name include -type d) \
+              	$(find $libdirs -name '*.a' 2>/dev/null) \
+              	$(find $libdirs -name '*.[cho]' \
+              		-o -name '*.prl' 2>/dev/null); do
+              	if [ -e "$PACKAGE_DIR/$i" ] || [ -L "$PACKAGE_DIR/$i" ]; then
+              		d="/home/build/melange-out/sqlite-dev/${i%/*}"
+              		mkdir -p "$d"
+              		mv "$PACKAGE_DIR/$i" "$d"
+              		rmdir "$PACKAGE_DIR/${i%/*}" 2>/dev/null || :
+              	fi
+              done
+              for i in lib/*.so usr/lib/*.so; do
+              	if [ -L "$i" ]; then
+              		mkdir -p "/home/build/melange-out/sqlite-dev"/"${i%/*}"
+              		mv "$i" "/home/build/melange-out/sqlite-dev/$i" || return 1
+              	fi
+              done
+    dependencies:
+      runtime:
+        - sqlite
+    description: sqlite headers
+    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - pkgconf
+            - sqlite-dev
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/pkgconf
+          pipeline:
+            - name: pkgconf build dependency check
+              runs: |
+                dev_pkg=$(basename /home/build/melange-out/sqlite-dev)
+                cd /
+                pc_files=false
+                for pc_file in $(apk info -L "$dev_pkg" 2>/dev/null | grep "\.pc$"); do
+                	pc_files=true
+
+                	if grep -q "^Name:" $pc_file; then
+                		lib_name=$(basename "$pc_file" ".pc")
+
+                		echo "$pc_file" | grep -q "^usr/lib/pkgconfig/${lib_name}.pc$\|^usr/share/pkgconfig/${lib_name}.pc$"
+
+                		pkgconf --exists $lib_name || pkgconf --print-errors --exists $lib_name
+
+                		if grep -q "^Version:" $pc_file; then
+                			pkgconf --modversion $lib_name
+                		fi
+
+                		if grep -q "^Libs:" $pc_file; then
+                			pkgconf --libs $lib_name
+                		fi
+
+                		if grep -q "^Cflags:" $pc_file; then
+                			pkgconf --cflags $lib_name
+                		fi
+                	fi
+                done
+                if [ $pc_files = "false" ]; then
+                	echo "No .pc files found in $dev_pkg please remove the pkgconf test"
+                fi
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="sqlite-dev" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+  - name: sqlite-doc
+    pipeline:
+      - uses: split/manpages
+        pipeline:
+          - runs: |
+              PACKAGE_DIR="/home/build/melange-out/sqlite"
+              if [ -n "" ]; then
+              	PACKAGE_DIR="/home/build/melange-out/"
+              fi
+              if [ "$PACKAGE_DIR" == "/home/build/melange-out/sqlite-doc" ]; then
+              	echo "ERROR: Package can not split files from itself!" && exit 1
+              fi
+              if [ -d "$PACKAGE_DIR/usr/share/man" ]; then
+              	mkdir -p "/home/build/melange-out/sqlite-doc/usr/share"
+              	mv "$PACKAGE_DIR/usr/share/man" "/home/build/melange-out/sqlite-doc/usr/share"
+              fi
+    description: sqlite documentation
+    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
+    test:
+      environment:
+        contents:
+          packages:
+            - apk-tools
+            - grep
+            - man-db
+            - sqlite-doc
+            - texinfo
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/docs
+          pipeline:
+            - name: docs readability check
+              runs: |
+                doc_pkg=$(basename /home/build/melange-out/sqlite-doc)
+                if [ $(apk info -qL "$doc_pkg" | grep -v "^var/lib/db/sbom" | grep -v "^$" | wc -l) -eq 0 ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] is completely empty (i.e. installs no files)."
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include documentation (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline (if for some reason we want an empty docs package), or"
+                	echo "  (c) remove the docs subpackage entirely"
+                	exit 1
+                fi
+                cd /
+                doc_files=false
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/man/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		man -l /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/info/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		[ $(info -f /"$doc_file" -o - | wc -l) -gt 0 ] && doc_files=true
+                	fi
+                done
+                for doc_file in $(apk info -qL "$doc_pkg" | grep "^usr/share/"); do
+                	if [ -f /"$doc_file" ]; then
+
+                		cat /"$doc_file" >/dev/null
+                		doc_files=true
+                	fi
+                done
+                if [ $doc_files = "false" ]; then
+                	echo "See:"
+                	apk info -qL "$doc_pkg"
+                	echo "This package [$doc_pkg] installs files, but no usable documentation"
+                	echo "Please check the package build for proper docs installation, and either:"
+                	echo "  (a) fix the docs subpackage build to actually include docs (check the split/manpages and split/infodir pipelines), or"
+                	echo "  (b) remove the test/docs pipeline"
+                	exit 1
+                fi
+  - name: sqlite-libs
+    pipeline:
+      - runs: |
+          mkdir -p "/home/build/melange-out/sqlite-libs"/usr
+          mv "/home/build/melange-out/sqlite"/usr/lib "/home/build/melange-out/sqlite-libs"/usr/
+    description: sqlite library
+    commit: 555173a96b80e35d5716f9dc43e1fe0f599c072d
+    test:
+      environment:
+        contents:
+          packages:
+            - ldd-check
+            - sqlite-libs
+        accounts:
+          run-as: ""
+          users:
+            - username: build
+              uid: 1000
+              gid: 1000
+              shell: ""
+              homedir: ""
+          groups:
+            - groupname: build
+              gid: 1000
+              members:
+                - build
+      pipeline:
+        - uses: test/tw/ldd-check
+          pipeline:
+            - name: check for missing library dependencies using ldd
+              runs: |
+                ldd-check \
+                	--files="" \
+                	--packages="sqlite-libs" \
+                	--extra-library-paths="" \
+                	--verbose="false"
+update:
+  enabled: true
+  manual: false
+  require-sequential: false
+  release-monitor:
+    identifier: 4877
+var-transforms:
+  - from: ${{package.version}}
+    match: ^(\d+)\.(\d+)\.(\d+)$
+    replace: ${1}${2}0${3}00
+    to: sqlite-download-version
+test:
+  environment:
+    contents:
+      packages:
+        - sqlite
+    accounts:
+      run-as: ""
+      users:
+        - username: build
+          uid: 1000
+          gid: 1000
+          shell: ""
+          homedir: ""
+      groups:
+        - groupname: build
+          gid: 1000
+          members:
+            - build
+  pipeline:
+    - name: version check
+      runs: |
+        sqlite3 --version
+        sqlite3 help
+    - name: basic test
+      runs: |
+        sqlite3 /tmp/test.db "CREATE TABLE test (id INT, name TEXT); INSERT INTO test VALUES (1, 'hello'); SELECT * FROM test;"
+        for i in $(seq 2 100); do
+        	sqlite3 /tmp/test.db "INSERT INTO test VALUES ($i, '$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13)');"
+        done
+        sqlite3 /tmp/test.db "SELECT * FROM test;"
+    - name: more sqlite tests
+      runs: |
+        sqlite3 -header -csv /tmp/test.db "SELECT * FROM test LIMIT 5;"
+        sqlite3 /tmp/test.db "SELECT * FROM test WHERE id > 50 LIMIT 5;"
+        sqlite3 /tmp/test.db ".schema"
+        sqlite3 /tmp/test.db "SELECT COUNT(*) FROM test;"
